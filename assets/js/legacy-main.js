@@ -1,40 +1,89 @@
+/**
+ * Move around 5 points to draw a line segment which gets 
+ * rotated 180deg on the y-axis
+ * Ported from https://www.shapeways.com/creator/sake-set
+ * @class
+ */
+var SakeSetCreator = function(params) {
+	var opts = $.extend({}, params),
+		$module = opts.module,
+		$editBtn = $module.find(".edit"),
+		$rotateBtn = $module.find(".rotate");
+
+	function init() {
+		console.log('init');
+		bindModeButtons();
+	}
+
+	/**
+	 * Setup toggle so the user can switch between different modes
+	 * examples: edit/rotate
+	 */
+	function bindModeButtons() {
+		$editBtn.on("click", function(e) {
+			e.preventDefault();
+			enterDrawMode();
+		});
+
+		$rotateBtn.on("click", function(e) {
+			e.preventDefault();
+			enterRotateMode();
+		});
+	}
+
+	init();
+
+	return;
+};
+
+$(function() {
+	var $creatorContainer = $("#creator-container");
+
+	sakeCreator = new SakeSetCreator({
+		module: $creatorContainer
+	});
+});
+
+
 var description = "This was made with the <a href='/creator/sake-set'>Sake Set Creator</a>",
 	mode = 1,
 	started = false;
 
 /**
- * TODO: document switchDraw
+ * TODO: document enterDrawMode
  */
-function switchDraw() {
-	mode=1;
+function enterDrawMode() {
+	mode = 1;
 	camera.position.y = -85;
 	showControlPts();
-	threeMesh.rotation.x=0;
-	//plane.rotation.x=0;
+	threeMesh.rotation.x = 0;
+	// plane.rotation.x=0;
 
-	CV2.style.visibility="visible";
-	jQuery("#drawButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/edit-active.png");
-	jQuery("#rotateButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/rotate.png");
-	if (started==false) {
-		jQuery("#points-info").show();
-		jQuery("#rotate-info").hide();
+	CV2.style.visibility = "visible";
+
+	$("#drawButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/edit-active.png");
+	$("#rotateButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/rotate.png");
+
+	if( started == false ) {
+		$("#points-info").show();
+		$("#rotate-info").hide();
 	}
 }
 
 /**
- * TODO: document switchMove
+ * TODO: document enterRotateMode
  */
-function switchMove() {
+function enterRotateMode() {
 	mode = 2;
 	camera.position.y = 30;
-	CV2.style.visibility="hidden";
-	
-	jQuery("#drawButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/edit.png");
-	jQuery("#rotateButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/rotate-active.png");
+	CV2.style.visibility = "hidden";
 
-	if (started==false) {
-		jQuery("#points-info").hide();
-		jQuery("#rotate-info").show();
+	$("#drawButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/edit.png");
+	$("#rotateButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/rotate-active.png");
+
+	if( started == false ) {
+		$("#points-info").hide();
+		$("#rotate-info").show();
 	}
 }
 
@@ -300,7 +349,7 @@ function initRenderer() {
 	resetFields();
 	animate();
 
-	switchDraw();
+	enterDrawMode();
 }
 
 /**
@@ -610,7 +659,6 @@ function showControlPts() {
 				selected = i;
 
 				if (started==false) {
-					hideInstructions();
 					started=true;
 				}
 			}
@@ -701,36 +749,15 @@ function renderSpline(pts) {
  * TODO: document getMaxX
  */
 function getMaxX(pts) {
-  var maxX=0;
-  for (var i=0; i<pts.length; i++){
-	if (pts[i].x>maxX) {
-	  maxX=pts[i].x;
-	}
-  }
-  return maxX;
-}
+  	var maxX=0;
 
-/**
- * TODO: document hideIntro
- */
-function hideIntro() {
-	jQuery("#intro-box").slideUp('slow');
-}
-
-/**
- * TODO: document hideInstructions
- */
-function hideInstructions() {
-	//jQuery(".instruction").fadeOut('slow');
-	jQuery(".instruction").hide();
-}
-
-/**
- * TODO: document switchInstructions
- */
-function switchInstructions() {
-	jQuery("#points-info").hide();
-	jQuery("#rotate-info").show();
+	for( var i = 0; i < pts.length; i++ ) {
+		if( pts[i].x > maxX ) {
+			maxX=pts[i].x;
+		}
+  	}
+  	
+  	return maxX;
 }
 
 /**
@@ -738,11 +765,11 @@ function switchInstructions() {
  */
 function resetFields() {
 	//jQuery("p.message").html("Approve and order your creation!");
-	errorCount=0;
-	recentlysaved="";
+	errorCount = 0;
+	recentlysaved = "";
 }
 
-var errorCount=0;
+var errorCount = 0;
 
 /**
  * TODO: document submitform

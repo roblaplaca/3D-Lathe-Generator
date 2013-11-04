@@ -8,14 +8,15 @@
 	<body>
 
 	<div id="creator-container" class="white-shadowbox" width="700" height="590">
+		
 		<h1 id="creator-title">Sake Set Creator</h1>
 		<a id="creator-link" href="/creator/">more creators </a>
 		
 		<div id="menu">
-			<a onclick="switchDraw()">
+			<a class="edit">
 				<img id="drawButton" alt="" src="https://www.shapeways.com/creators/sake_set/UI/edit.png" />
 			</a> 
-			<a onclick="switchMove()">
+			<a class="rotate">
 				<img id="rotateButton" alt="" src="https://www.shapeways.com/creators/sake_set/UI/rotate.png" />
 			</a>
 		</div>
@@ -23,9 +24,6 @@
 		<div id="threejs_container" class=".white-shadowbox">
 
 		</div>
-		
-		<img class="instruction" id="points-info" alt="" src="https://www.shapeways.com/creators/sake_set/UI/points-info.png" /> 
-		<img class="instruction" id="rotate-info" alt="" src="https://www.shapeways.com/creators/sake_set/UI/rotate-info.png" />
 		
 		<div id="sliders">
 			<img alt="" src="https://www.shapeways.com/creators/sake_set/UI/no-twist.png" />
@@ -37,11 +35,7 @@
 			<img alt="" src="https://www.shapeways.com/creators/sake_set/UI/twist.png" /> <br />
 			<span>twist</span>
 		</div>
-	
-		<div id="intro-box">
-			<h1>Placeholder Introduction Box</h1>
-			<a id="start-creating" class="button" onclick="hideIntro()"> start creating! </a>
-		</div>
+
 	</div>
 
 	<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
