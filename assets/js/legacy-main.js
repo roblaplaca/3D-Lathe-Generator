@@ -467,7 +467,7 @@ function changeMesh(res){
 	toxiMesh = createMesh(new toxi.TriangleMesh(),res,1,true);
 	threeMesh = toxiToThreeSupport.addMesh(toxiMesh,material);
 	threeMesh.doubleSided = true;
-	threeMesh.overdraw=true;
+	threeMesh.overdraw = true;
 	scene.addObject(threeMesh);
 }
 
@@ -508,36 +508,11 @@ function showControlPts() {
 	}
 }
 
-
 	var h = pts[pts.length-1];
 
 	//here we add a little to account for wall thickness
 	modelH = Math.floor((h.y-pts[0].y)/2)+2;
 	modelW = Math.floor(getMaxX(cpts))+3;
-
-	//write dimensions
-	ctx.font="monospace 20px sans-serif";
-	ctx.fillStyle="rgba(50,50,50,100)";
-	ctx.strokeStyle="rgba(90,90,90,50)";
-	ctx.beginPath();
-
-	//ruler line for height
-	ctx.moveTo(w/2-modelW*1.5+5, -h.y*1.2+pdy);
-	ctx.lineTo(w/2-modelW*1.5, -h.y*1.2+pdy);
-	ctx.lineTo(w/2-modelW*1.5, -pts[0].y*1.2+pdy);
-	ctx.lineTo(w/2-modelW*1.5+5, -pts[0].y*1.2+pdy);
-
-	//ruler line for width
-	ctx.moveTo(w/2-modelW*1.2, -pts[0].y*1.2+pdy+35);
-	ctx.lineTo(w/2-modelW*1.2, -pts[0].y*1.2+pdy+40);
-	ctx.lineTo(w/2+modelW*1.2, -pts[0].y*1.2+pdy+40);
-	ctx.lineTo(w/2+modelW*1.2, -pts[0].y*1.2+pdy+35);
-
-	ctx.stroke();
-	ctx.closePath();
-
-	ctx.fillText(modelW/10+" cm", w/2+modelW*1.2, -pts[0].y*1.2+pdy+50);
-	ctx.fillText(modelH/10+" cm", w/2-modelW*1.5-40, -h.y*1.2+pdy);
 
 // TODO: figure out where this { opens
 }
