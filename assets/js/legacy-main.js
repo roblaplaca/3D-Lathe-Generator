@@ -301,32 +301,6 @@ function render() {
 }
 
 /**
- * TODO: document loadPreset
- */
-function loadPreset(presetVal) {
-	// console.log(presetVal);
-	jQuery( "#smoothslider" ).slider({
-		value: presetVal[0]
-	});
-
-	jQuery( "#twistslider" ).slider({
-		value: presetVal[1]
-	});
-
-	var p=2;
-	var pts = spline.pointList;
-
-	for (var i=0; i<pts.length; i++) {
-		pts[i].x=presetVal[p];
-		pts[i].y=presetVal[p+1];
-		p=p+2;
-	}
-
-	changeMesh(presetVal[0]);
-	showControlPts();
-}
-
-/**
  * TODO: document createMesh
  */
 function createMesh() {
