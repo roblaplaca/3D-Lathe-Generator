@@ -1,6 +1,6 @@
 /**
  * Move around 5 points to draw a line segment which gets 
- * rotated 180deg on the y-axis
+ * rotated 180 degrees on the y-axis
  * Ported from https://www.shapeways.com/creator/sake-set
  * @class
  */
@@ -44,16 +44,10 @@ $(function() {
 	});
 });
 
-
-var description = "This was made with the <a href='/creator/sake-set'>Sake Set Creator</a>",
-	mode = 1,
-	started = false;
-
 /**
  * TODO: document enterDrawMode
  */
 function enterDrawMode() {
-	mode = 1;
 	camera.position.y = -85;
 	showControlPts();
 	threeMesh.rotation.x = 0;
@@ -63,28 +57,17 @@ function enterDrawMode() {
 
 	$("#drawButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/edit-active.png");
 	$("#rotateButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/rotate.png");
-
-	if( started == false ) {
-		$("#points-info").show();
-		$("#rotate-info").hide();
-	}
 }
 
 /**
  * TODO: document enterRotateMode
  */
 function enterRotateMode() {
-	mode = 2;
 	camera.position.y = 30;
 	CV2.style.visibility = "hidden";
 
 	$("#drawButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/edit.png");
 	$("#rotateButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/rotate-active.png");
-
-	if( started == false ) {
-		$("#points-info").hide();
-		$("#rotate-info").show();
-	}
 }
 
 /**
@@ -657,10 +640,6 @@ function showControlPts() {
 			if (mousePressed) {
 				// set the selected node
 				selected = i;
-
-				if (started==false) {
-					started=true;
-				}
 			}
 		}
 	}
@@ -756,7 +735,7 @@ function getMaxX(pts) {
 			maxX=pts[i].x;
 		}
   	}
-  	
+
   	return maxX;
 }
 
@@ -785,7 +764,7 @@ function submitform(session) {
 
 	var modeltitle = document.getElementById('modeltitle').value;
 	if (modeltitle == "") {
-	modeltitle= "Untitled";
+		modeltitle= "Untitled";
 	}
 
 	var splinepts="";
@@ -838,7 +817,7 @@ function submitform(session) {
 		"&p_twist=" + twist +
 		"&p_spline=" + splinepts+
 		"&materials=Glazed Ceramics"+
-		"&desc=" + description +
+		"&desc=" + "This was made with the <a href='/creator/sake-set'>Sake Set Creator</a>" +
 		"&tags=Create:SakeSet"
 		//"&soapServer=TEST6"
 	);
