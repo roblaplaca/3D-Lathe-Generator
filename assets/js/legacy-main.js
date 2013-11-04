@@ -36,11 +36,9 @@ var SakeSetCreator = function(params) {
 };
 
 $(function() {
-
 	sakeCreator = new SakeSetCreator({
 		module: $("#creator-container")
 	});
-
 });
 
 /**
@@ -82,10 +80,11 @@ function getPositionLeft(This){
 	var el = This;
 	var pL = 0;
 
-	while(el){
+	while(el) {
 		pL += el.offsetLeft;
 		el=el.offsetParent;
 	}
+
 	return pL;
 }
 
@@ -105,7 +104,6 @@ function getPositionTop(This){
 }
 
 var container = document.getElementById('threejs_container'),
-	$m = jQuery("#m"),
 	mouse = new toxi.Vec2D(),
 	pmouse = new toxi.Vec2D(),
 	cameraSensitivity = 1.2,
@@ -209,10 +207,8 @@ if ((BrowserDetect.browser != "Explorer") || (BrowserDetect.browser == "Explorer
 		mouse.y = event.pageY-dy;
 
 		if (mousePressed == true){
-			threeMesh.rotation.x += (mouse.y-pmouse.y)/100;
-			threeMesh.rotation.y += (mouse.x-pmouse.x)/100;
-			//plane.rotation.x += (mouse.y-pmouse.y)/100;
-			//plane.rotation.y += (mouse.x-pmouse.x)/100;
+			threeMesh.rotation.x += (mouse.y-pmouse.y) / 100;
+			threeMesh.rotation.y += (mouse.x-pmouse.x) / 100;
 		}
 	};
 
@@ -236,14 +232,13 @@ if ((BrowserDetect.browser != "Explorer") || (BrowserDetect.browser == "Explorer
 		pmouse.x=mouse.x;
 		pmouse.y=mouse.y;
 
-		mouse.x = event.pageX-dx;
-		mouse.y = event.pageY-dy;
+		mouse.x = event.pageX - dx;
+		mouse.y = event.pageY - dy;
 
 		showControlPts();
 	};
 } else {
-	jQuery("#main-box").hide();
-	//$(".message").innerHTML("3D won't work");
+	// TODO: Inform user that webgl won't work
 }
 
 var renderer;
@@ -256,8 +251,9 @@ function initRenderer() {
 	CV2.id = "canvas2D";
 	CV2.width=700;
 	CV2.height=590;
+
 	jQuery("#threejs_container").append(CV2);
-	//CV2 = document.getElementById('canvas2D');
+
 	ctx = CV2.getContext('2d');
 
 	renderer= WebGLSupported ? new THREE.WebGLRenderer() : new THREE.CanvasRenderer();
