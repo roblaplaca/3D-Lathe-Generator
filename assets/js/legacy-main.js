@@ -472,18 +472,6 @@ function changeMesh(res){
 }
 
 /**
- * TODO: document triArea
- */
-function triArea(a,b,c) {
-	var da = a.distanceTo(b);
-	var db = b.distanceTo(c);
-	var dc = c.distanceTo(a);
-	var p = (da+db+dc)/2;
-	var A = Math.sqrt(p*(p-da)*(p-db)*(p-dc));
-	return A;
-}
-
-/**
  * TODO: document showControlPts
  */
 function showControlPts() {
