@@ -11,7 +11,6 @@ var SakeSetCreator = function(params) {
 		$rotateBtn = $module.find(".rotate");
 
 	function init() {
-		console.log('init');
 		bindModeButtons();
 	}
 
@@ -37,11 +36,11 @@ var SakeSetCreator = function(params) {
 };
 
 $(function() {
-	var $creatorContainer = $("#creator-container");
 
 	sakeCreator = new SakeSetCreator({
-		module: $creatorContainer
+		module: $("#creator-container")
 	});
+
 });
 
 /**
@@ -70,64 +69,11 @@ function enterRotateMode() {
 	$("#rotateButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/rotate-active.png");
 }
 
-/**
- * TODO: document showCredits
- */
-function showCredits() {
-	jQuery("#creditsbox").show();
-}
-
-/**
- * TODO: document hideCredits
- */
-function hideCredits() {
-	jQuery("#creditsbox").hide();
-}
-
-/**
- * TODO: document updateRes
- */
-function updateRes() {
-	meshResolution=jQuery("#smoothslider").slider("value");
-	changeMesh(meshResolution);
-}
-
-/**
- * TODO: document updateTwist
- */
-function updateTwist() {
-	twist = jQuery("#twistslider").slider("value");
-	changeMesh(meshResolution);
-}
-
-/**
- * TODO: document updateRidge
- */
-function updateRidge(val) {
-	ridge=val;
-	changeMesh(meshResolution);
-}
-
-jQuery( "#smoothslider" ).slider({
-	orientation: "horizontal",
-	range: "min",
-	min: 4,
-	max: 50,
-	value: 20,
-	change: updateRes
-});
-
-jQuery( "#twistslider" ).slider({
-	orientation: "horizontal",
-	range: "min",
-	min: 0,
-	max: 40,
-	value: 0,
-	change: updateTwist
-});
-
-var dx=0, dy=30;
-var w=700, h=590;
+// TODO: document what these values do
+var dx=0,
+	dy=30,
+	w=700,
+	h=590;
 
 /**
  * TODO: document getPositionLeft
