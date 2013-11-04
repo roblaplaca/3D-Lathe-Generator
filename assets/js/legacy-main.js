@@ -42,13 +42,14 @@ $(function() {
 });
 
 /**
- * TODO: document enterDrawMode
+ * Toggles mode buttons and enables draw mode
+ * where a user can drag around 5 handles to creat
+ * a line which will get rotated to make a 3d object
  */
 function enterDrawMode() {
 	camera.position.y = -85;
 	showControlPts();
 	threeMesh.rotation.x = 0;
-	// plane.rotation.x=0;
 
 	CV2.style.visibility = "visible";
 
@@ -57,7 +58,8 @@ function enterDrawMode() {
 }
 
 /**
- * TODO: document enterRotateMode
+ * Toggles mode buttons and enables rotate mode
+ * Allows user to rotate generated model
  */
 function enterRotateMode() {
 	camera.position.y = 30;
@@ -123,9 +125,6 @@ var container = document.getElementById('threejs_container'),
 var plane;
 var WebGLSupported = isWebGLSupported();
 
-//stores url for last saved model;
-var recentlysaved = "";
-
 var starty = 0;
 var spline = new toxi.Spline2D();
 
@@ -152,25 +151,7 @@ var pdx = w/2, pdy = h/2-starty;
 var selected=-1;
 
 function isWebGLSupported() {
-	var cvs = document.createElement('canvas');
-	var contextNames = ["webgl","experimental-webgl","moz-webgl","webkit-3d"];
-	var ctx;
-
-	if ( navigator.userAgent.indexOf("MSIE") >= 0 ) {
-		try {
-			ctx = WebGLHelper.CreateGLContext(cvs, 'canvas');
-		} catch(e) {}
-	} else {
-		for ( var i = 0; i < contextNames.length; i++ ) {
-			try {
-				ctx = cvs.getContext(contextNames[i]);
-				if ( ctx ) break;
-			} catch(e){}
-		}
-	}
-
-	if ( ctx ) return true;
-	return false;
+	return Modernizr.webgl;
 }
 
 var material = new THREE.MeshLambertMaterial( { color: 0xee00ee, shading: THREE.FlatShading } );
@@ -179,10 +160,8 @@ var CV;
 var CV2;
 var ctx;
 
-BrowserDetect.init();
+if( isWebGLSupported() ) {
 
-if ((BrowserDetect.browser != "Explorer") || (BrowserDetect.browser == "Explorer" && BrowserDetect.version==9)) {
-	//console.log("good to go");
 	initRenderer();
 
 	CV.onmousedown = function(evt) {
@@ -249,8 +228,8 @@ var renderer;
 function initRenderer() {
 	CV2 = document.createElement('canvas');
 	CV2.id = "canvas2D";
-	CV2.width=700;
-	CV2.height=590;
+	CV2.width = 700;
+	CV2.height = 590;
 
 	jQuery("#threejs_container").append(CV2);
 
@@ -271,7 +250,6 @@ function initRenderer() {
 
 	//create first mesh
 	changeMesh(meshResolution);
-	resetFields();
 	animate();
 
 	enterDrawMode();
@@ -295,16 +273,16 @@ function setupLights() {
 
 	scene.addLight( directionalLight );
 
-  if (!isWebGLSupported()) {
-	//var plane = new THREE.Mesh( new THREE.PlaneGeometry( 900, 800 ), new THREE.MeshBasicMaterial() );
-	var plane = new THREE.Mesh( new THREE.PlaneGeometry( 1200, 1000 ), new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'https://www.shapeways.com/creators/sake_set/UI/background1.jpg' ) } ) );
+	if (!isWebGLSupported()) {
+		//var plane = new THREE.Mesh( new THREE.PlaneGeometry( 900, 800 ), new THREE.MeshBasicMaterial() );
+		var plane = new THREE.Mesh( new THREE.PlaneGeometry( 1200, 1000 ), new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'https://www.shapeways.com/creators/sake_set/UI/background1.jpg' ) } ) );
 
-	plane.rotation.x =  360 * ( Math.PI / 180 );
-	plane.position.z=-170;
-	plane.position.y = camera.position.y+55;
-	plane.overdraw = true;
-	scene.addObject( plane );
-  }
+		plane.rotation.x =  360 * ( Math.PI / 180 );
+		plane.position.z=-170;
+		plane.position.y = camera.position.y+55;
+		plane.overdraw = true;
+		scene.addObject( plane );
+	}
 }
 
 /**
@@ -320,25 +298,6 @@ function animate() {
  */
 function render() {
 	renderer.render( scene, camera );
-}
-
-/**
- * TODO: document loadDesign
- */
-function loadDesign(splineptsX, splineptsY, smoothval, twistval) {
-	for (var i=0; i<splineptsX.length; i++) {
-		spline.add(new toxi.Vec2D(splineptsX[i], splineptsY[i]));
-	}
-
-	jQuery( "#smoothslider" ).slider({
-		value: smoothval
-	});
-
-	jQuery( "#twistslider" ).slider({
-		value: twistval
-	});
-
-	changeMesh(smoothval);
 }
 
 /**
@@ -627,7 +586,7 @@ function showControlPts() {
 function renderSpline(pts) {
 	ctx.beginPath();
 	
-	//draw points
+	// draw points
 	for (var i=1; i<pts.length; i++) {
 		ctx.beginPath();
 	
@@ -652,10 +611,10 @@ function renderSpline(pts) {
 	var splinepts = spline.computeVertices(8);
 
 	for (var i=0; i<splinepts.length; i++) {
-		var px = splinepts[i].x*1.2+pdx;
-		var py = (starty-splinepts[i].y*1.2)+pdy;
+		var px = splinepts[i].x * 1.2 + pdx;
+		var py = (starty - splinepts[i].y * 1.2) + pdy;
 	
-		if (i==0){
+		if( i==0 ) {
 			ctx.moveTo(px,py);
 		} else {
 			ctx.lineTo(px,py);
@@ -670,125 +629,12 @@ function renderSpline(pts) {
  * TODO: document getMaxX
  */
 function getMaxX(pts) {
-  	var maxX=0;
-
+	var maxX = 0;
 	for( var i = 0; i < pts.length; i++ ) {
 		if( pts[i].x > maxX ) {
 			maxX=pts[i].x;
 		}
-  	}
-
-  	return maxX;
-}
-
-/**
- * TODO: document resetFields
- */
-function resetFields() {
-	//jQuery("p.message").html("Approve and order your creation!");
-	errorCount = 0;
-	recentlysaved = "";
-}
-
-var errorCount = 0;
-
-/**
- * TODO: document submitform
- */
-function submitform(session) {
-	//console.log(spline.pointList);
-	jQuery("#save-cover").show();
-	SWCF.processing();
-
-	//console.log(session);
-	camera.position.y = -85;
-	threeMesh.rotation.x=0;
-
-	var modeltitle = document.getElementById('modeltitle').value;
-	if (modeltitle == "") {
-		modeltitle= "Untitled";
 	}
-
-	var splinepts="";
-	var pts = spline.pointList;
-
-	for (var i=0; i<pts.length-1; i++) {
-		splinepts=splinepts + pts[i].x;
-		splinepts=splinepts + "_";
-		splinepts=splinepts + pts[i].y;
-		splinepts=splinepts + "_";
-	}
-
-	splinepts=splinepts+pts[pts.length-1].x;
-	splinepts=splinepts + "_";
-	splinepts=splinepts + pts[pts.length-1].y;
-
-	// Send to Server
-	var xhreq = createXMLHttpRequest();
-	xhreq.open("post", "/creator-generators/sakeset/save", true);
-	xhreq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-	xhreq.onreadystatechange = function statechanged() {
-		if (xhreq.readyState==4 && xhreq.status==200) {
-			jQuery("#save-cover").hide();
-			var xmlDoc=xhreq.responseXML;
-			var success = isSuccess(xmlDoc);
-
-			if (success == "true") {
-				errorCount=0;
-				setTimeout(function() {
-					SWCF.success(getModelID(xmlDoc))
-				}, 15000);
-			} else {
-				if (errorCount>0){
-					SWCF.error2('there is a problem');
-				} else {
-					SWCF.error('there is a problem');
-					errorCount++;
-				}
-			}
-		
-			console.log(xhreq.responseXML);
-		}
-	}
-
-	//"&materials=63" +
-	xhreq.send("sessionID=" + session +
-		"&title=" + modeltitle +
-		"&p_smooth=" + meshResolution +
-		"&p_twist=" + twist +
-		"&p_spline=" + splinepts+
-		"&materials=Glazed Ceramics"+
-		"&desc=" + "This was made with the <a href='/creator/sake-set'>Sake Set Creator</a>" +
-		"&tags=Create:SakeSet"
-		//"&soapServer=TEST6"
-	);
+	return maxX;
 }
 
-/**
- * TODO: document isSuccess
- */
-function isSuccess(xmlDoc) {
-	var result = xmlDoc.getElementsByTagName("KernelResults")[0];
-	var success = result.getAttribute("success");
-	return success;
-}
-
-/**
- * TODO: document getModelID
- */
-function getModelID(xmlDoc) {
-	var result = xmlDoc.getElementsByTagName("KernelResults")[0];
-	var id = result.getAttribute("modelID");
-	return id;
-}
-
-/**
- * TODO: document createXMLHttpRequest
- */
-function createXMLHttpRequest() {
-	try { return new XMLHttpRequest(); } catch(e) {}
-	try { return new ActiveXObject("Msxml2.XMLHTTP"); } catch (e) {}
-	alert("XMLHttpRequest not supported");
-	return null;
-}
