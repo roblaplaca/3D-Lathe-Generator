@@ -73,8 +73,8 @@ var SakeSetCreator = function(params) {
 		};
 
 		splineCanvas.onmousemove = function(event){
-			dx = getPositionLeft(document.getElementById("workspace"))-5;
-			dy = getPositionTop(document.getElementById("workspace"))-5;
+			dx = getPositionLeft(container)-5;
+			dy = getPositionTop(container)-5;
 
 			pmouse.x = mouse.x;
 			pmouse.y = mouse.y;
@@ -236,31 +236,16 @@ var SakeSetCreator = function(params) {
 	 * TODO: document setupLights
 	 */
 	function setupLights() {
-		var particleLight,
-			pointLight,
-			pointLight2;
-
 		scene.add( new THREE.AmbientLight( 0x330033 ) );
 
 		window.directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
 		directionalLight.position.set( 0, 1, 0 );
-		// directionalLight.position.normalize();
-		// scene.add( directionalLight );
+		directionalLight.position.normalize();
+		scene.add( directionalLight );
 
 		var light = new THREE.PointLight( 0xff0000, 1, 100 ); 
 		light.position.set( 50, 50, 50 ); 
 		scene.add( light );
-
-		if (!isWebGLSupported()) {
-			//var plane = new THREE.Mesh( new THREE.PlaneGeometry( 900, 800 ), new THREE.MeshBasicMaterial() );
-			var plane = new THREE.Mesh( new THREE.PlaneGeometry( 1200, 1000 ), new THREE.MeshBasicMaterial( { map: THREE.ImageUtils.loadTexture( 'https://www.shapeways.com/creators/sake_set/UI/background1.jpg' ) } ) );
-
-			plane.rotation.x =  360 * ( Math.PI / 180 );
-			plane.position.z=-170;
-			plane.position.y = camera.position.y+55;
-			plane.overdraw = true;
-			scene.add( plane );
-		}
 	}
 
 	/**
@@ -302,37 +287,37 @@ var SakeSetCreator = function(params) {
 	 */
 	function createMesh() {
 		//should have either 1, 3 or 4 parameters
-		var mesh = undefined,
-			res = undefined,
+		var mesh,
+			res,
 			size = 1,
+			wt = wallthickness / 2,
 			isClosed = true;
 
-		if(arguments.length == 1){
+		if( arguments.length == 1 ) {
 			res = arguments[0];
-		} else if(arguments.length ==3 ){ //mesh, res, size
+		} else if(arguments.length == 3 ) {
+			// mesh, res, size
 			mesh = arguments[0];
 			res = arguments[1];
 			size = arguments[2];
-		} else if(arguments.length == 4){
+		} else if( arguments.length == 4 ) {
 			mesh = arguments[0];
 			res = arguments[1];
 			size = arguments[2];
 			isClosed = arguments[3];
 		}
 
-		if(mesh == null || mesh == undefined) {
-			//this is for in case people use it in toxi's examples for p5
+		if( typeof mesh === "undefined" ) {
+			// this is for in case people use it in toxi's examples for p5
 			mesh = new toxi.geom.mesh.TriangleMesh();
 		}
 
-		var wt = wallthickness / 2;
-
 		cpts = spline.computeVertices(8);
 
-		//clean up the points
+		// clean up the points
 		for (var i=0; i<cpts.length-1; i++) {
-			var pt1=cpts[i],
-				pt2=cpts[i+1];
+			var pt1 = cpts[i],
+				pt2 = cpts[i+1];
 
 			if((pt2.y-pt1.y)<.1) {
 				cpts.splice(i,1);
