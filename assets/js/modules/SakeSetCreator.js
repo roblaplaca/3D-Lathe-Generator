@@ -5,7 +5,7 @@
  * @class
  */
 var SakeSetCreator = function(params) {
-	
+
 	var opts = $.extend({}, params),
 		dx = 0, dy = 30,
 		w = 700, h = 590,
@@ -21,15 +21,11 @@ var SakeSetCreator = function(params) {
 		camera = new THREE.Camera( 70, stage.x / stage.y, 1, 10000 );
 		scene = new THREE.Scene(),
 		material = new THREE.MeshLambertMaterial( { color: 0xEC008C, shading: THREE.FlatShading } ),
-		cameraSensitivity = 1.2,
-		objectRadius = 1,
+		toxiToThreeSupport = new toxi.THREE.ToxiclibsSupport(scene),
 		meshResolution = 20,
-		twist = 0,
-		ridge = 0,
 		m = [],
 		modelW = 0,
 		modelH=0,
-		toxiToThreeSupport = new toxi.THREE.ToxiclibsSupport(scene),
 		threeMesh = null,
 		plane = null,
 		starty = 0,
@@ -55,6 +51,7 @@ var SakeSetCreator = function(params) {
 			bindModeButtons();
 		} else {
 			// TODO: Inform user that webgl won't work
+			alert('test');
 		}
 	}
 
@@ -334,25 +331,26 @@ var SakeSetCreator = function(params) {
 
 		//clean up the points
 		for (var i=0; i<cpts.length-1; i++) {
-			var pt1=cpts[i];
-			var pt2=cpts[i+1];
-			if ((pt2.y-pt1.y)<.1){
+			var pt1=cpts[i],
+				pt2=cpts[i+1];
+
+			if((pt2.y-pt1.y)<.1) {
 				cpts.splice(i,1);
 			}
 		}
-		
+
 		// array of Vec 2D points surrounding spline curve
-		var points = [];
-		var begin = spline.pointList[0];
+		var points = [],
+			begin = spline.pointList[0];
 
 		points.push(new toxi.geom.Vec2D(begin.x, begin.y-wt));
 
 		for (var i=0; i<cpts.length-1; i++) { //add points offset from spline points
-			var p= cpts[i];
-			var p2=cpts[i+1];
-			var m= p2.sub(p);
-			var t=m.perpendicular().normalize();
-			var tp=p.sub(t.scale(wt));
+			var p = cpts[i];
+			var p2 = cpts[i+1];
+			var m = p2.sub(p);
+			var t = m.perpendicular().normalize();
+			var tp = p.sub(t.scale(wt));
 			points.push(tp);
 		}
 
@@ -363,11 +361,11 @@ var SakeSetCreator = function(params) {
 
 		// get tangent lines in opposite direction
 		for (var i=cpts.length-1; i>0; i--) {
-			var p= cpts[i];
-			var p2=cpts[i-1];
-			var m= p2.sub(p);
-			var t=m.perpendicular().normalize();
-			var tp=p.sub(t.scale(wt));
+			var p = cpts[i];
+			var p2 = cpts[i-1];
+			var m = p2.sub(p);
+			var t = m.perpendicular().normalize();
+			var tp = p.sub(t.scale(wt));
 			points.push(tp);
 		}
 
@@ -378,46 +376,20 @@ var SakeSetCreator = function(params) {
 		var Lres = res;
 		var theta = 0;
 
-		if (twist>0 || ridge>0) {
-			//longitude curves going around
-			for (var i=0; i<Lres*2; i++) { 
-				var curvepts = [];
-				for (var j=0; j<points.length; j++) {
-					var p=points[j];
-					var r=Math.abs(p.x);
+		// longitude curves going around
+		for (var i=0; i<Lres; i++) {
+			var curvepts = [];
 
-					if ((i%2==0)) {
-						// r=r-4;
-						r = r * Math.cos(Math.PI/Lres) - (ridge/10);
-					}
-
-					var twistamt=(twist/100)*(Math.PI*2)*(Math.abs(p.y-points[0].y)/points[0].y);
-					var x=r*Math.cos(theta+twistamt);
-					var z=r*Math.sin(theta+twistamt);
-
-					curvepts.push(new toxi.geom.Vec3D(x, p.y, z));
-				}
-
-				longitudes.push(curvepts);
-				theta+=(Math.PI)/Lres;
+			for (var j=0; j<points.length; j++) {
+				var p=points[j];
+				var r=Math.abs(p.x);
+				var x=r*Math.cos(theta);
+				var z=r*Math.sin(theta);
+				curvepts.push(new toxi.geom.Vec3D(x, p.y, z));
 			}
-		} else {
-			// longitude curves going around
-			for (var i=0; i<Lres; i++) {
-				var curvepts = [];
 
-				for (var j=0; j<points.length; j++) {
-					var p=points[j];
-					var r=Math.abs(p.x);
-					var twistamt=(twist/100)*(Math.PI*2)*(Math.abs(p.y-points[0].y)/points[0].y);
-					var x=r*Math.cos(theta+twistamt);
-					var z=r*Math.sin(theta+twistamt);
-					curvepts.push(new toxi.geom.Vec3D(x, p.y, z));
-				}
-
-				longitudes.push(curvepts);
-				theta+=(Math.PI*2)/Lres;
-			}
+			longitudes.push(curvepts);
+			theta+=(Math.PI*2)/Lres;
 		}
 
 		for (var i=0; i<longitudes.length-1; i++) { //make triangle strips
@@ -435,14 +407,14 @@ var SakeSetCreator = function(params) {
 		}
 
 		//make sure to close the last curve with the first curve
-		var p=longitudes[longitudes.length-1];
-		var p2=longitudes[0];
+		var p = longitudes[longitudes.length-1];
+		var p2 = longitudes[0];
 
 		for (var j=0; j<p.length-1; j++) {
-			var A= p[j];
-			var B=p2[j];
-			var C=p[j+1];
-			var D=p2[j+1];
+			var A = p[j];
+			var B = p2[j];
+			var C = p[j+1];
+			var D = p2[j+1];
 			mesh.addFace(A,B,C);
 			mesh.addFace(C,B,D);
 		}
@@ -521,7 +493,6 @@ var SakeSetCreator = function(params) {
 			if (mouse.x>(w/2+12)) { //make sure the points don't go past the center line + 12mm
 				pts[selected].x=(mouse.x-pdx)/1.2;
 			}
-		
 			pts[selected].y=(starty-(mouse.y-pdy))/1.2;
 		} else {
 			//skip the first point
