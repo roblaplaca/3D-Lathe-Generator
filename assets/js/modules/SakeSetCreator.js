@@ -5,24 +5,23 @@
  * @class
  */
 var SakeSetCreator = function(params) {
+	
 	var opts = $.extend({}, params),
 		dx = 0, dy = 30,
 		w = 700, h = 590,
 		$module = opts.module,
 		$editBtn = $module.find(".edit"),
-		$rotateBtn = $module.find(".rotate");
-
-	/////////////
-	var renderer;
-	var toxiMesh;
-
-	var container = document.getElementById('workspace'),
+		$rotateBtn = $module.find(".rotate"),
+		renderer,
+		toxiMesh,
+		container = $("#workspace").get(0),
 		mouse = new toxi.geom.Vec2D(),
 		pmouse = new toxi.geom.Vec2D(),
-		cameraSensitivity = 1.2,
 		stage = new toxi.geom.Vec2D(w,h),
 		camera = new THREE.Camera( 70, stage.x / stage.y, 1, 10000 );
 		scene = new THREE.Scene(),
+		material = new THREE.MeshLambertMaterial( { color: 0xEC008C, shading: THREE.FlatShading } ),
+		cameraSensitivity = 1.2,
 		objectRadius = 1,
 		meshResolution = 20,
 		twist = 0,
@@ -31,29 +30,21 @@ var SakeSetCreator = function(params) {
 		modelW = 0,
 		modelH=0,
 		toxiToThreeSupport = new toxi.THREE.ToxiclibsSupport(scene),
-		threeMesh = undefined;
-
-	var plane;
-	var starty = 0;
-	var spline = null;
-
-	// this is twice what we need in mm because we scale the screen model in half on export
-	var wallthickness = 8;
-	var cpts;
-
-	// mouse actions and controls
-	var mousePressed = false;
-
-	var pdx = w / 2,
-		pdy = h / 2 - starty;
-	var selected = -1;
-
-	var material = new THREE.MeshLambertMaterial( { color: 0xEC008C, shading: THREE.FlatShading } );
-
-	var canvas3D;
-	var splineCanvas;
-	var splineCanvasCtx;
-	/////////////
+		threeMesh = null,
+		plane = null,
+		starty = 0,
+		spline = null,
+		// this is twice what we need in mm because we scale the screen model in half on export
+		wallthickness = 8,
+		cpts = null,
+		// mouse actions and controls
+		mousePressed = false,
+		pdx = w / 2,
+		pdy = h / 2 - starty,
+		selected = -1,
+		canvas3D = null,
+		splineCanvas = null,
+		splineCanvasCtx = null; 
 
 	function init() {
 		if( isWebGLSupported() ) {
@@ -283,7 +274,7 @@ var SakeSetCreator = function(params) {
 			res = meshResolution;
 		}
 
-		if(threeMesh !== undefined) {
+		if( threeMesh !== null ) {
 			scene.remove(threeMesh);
 		}
 
