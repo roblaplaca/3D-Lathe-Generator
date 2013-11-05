@@ -29,14 +29,18 @@
 		<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 		<script src="/assets/js/libs/toxiclibs.js"></script>
 		<script src="/assets/js/libs/Three.js"></script>
-		<script src="/assets/js/libs/ToxiclibsSupport.js"></script>
 		<script src="/assets/js/libs/RequestAnimationFrame.js"></script>
-		<script src="/assets/js/libs/jquery.ui.core.min.js"></script>
-		<script src="/assets/js/libs/jquery.ui.widget.min.js"></script>
-		<script src="/assets/js/libs/jquery.ui.mouse.min.js"></script>
-		<script src="/assets/js/libs/jquery.ui.slider.min.js"></script>
-		<!-- <script src="/assets/js/libs/jquery.tools.min.js"></script> -->
-		<script src="/assets/js/legacy-main.js"></script>
+		<script src="/assets/js/libs/FileSaver.js"></script>
+    	<script src="/assets/js/libs/stlWriter.js"></script>
+		<script src="/assets/js/modules/SakeSetCreator.js"></script>
+		<script>
+			$(function() {
+				sakeCreator = new SakeSetCreator({
+					module: $("#creator-container")
+				});
+			});
+		</script>
 
 	</body>
 </html>
+
