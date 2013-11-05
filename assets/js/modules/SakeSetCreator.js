@@ -16,7 +16,7 @@ var SakeSetCreator = function(params) {
 	var renderer;
 	var toxiMesh;
 
-	var container = document.getElementById('threejs_container'),
+	var container = document.getElementById('workspace'),
 		mouse = new toxi.geom.Vec2D(),
 		pmouse = new toxi.geom.Vec2D(),
 		cameraSensitivity = 1.2,
@@ -44,81 +44,90 @@ var SakeSetCreator = function(params) {
 	// mouse actions and controls
 	var mousePressed = false;
 
-	var pdx = w/2,
-		pdy = h/2-starty;
-	var selected=-1;
+	var pdx = w / 2,
+		pdy = h / 2 - starty;
+	var selected = -1;
 
 	var material = new THREE.MeshLambertMaterial( { color: 0xEC008C, shading: THREE.FlatShading } );
 
-	var CV;
-	var CV2;
-	var ctx;
+	var canvas3D;
+	var splineCanvas;
+	var splineCanvasCtx;
 	/////////////
 
 	function init() {
-		initSpline();
-
 		if( isWebGLSupported() ) {
-
+			initSpline();
 			initRenderer();
-
-			CV.onmousedown = function(evt) {
-				mousePressed = true;
-				evt.preventDefault();
-				evt.stopPropagation();
-				CV.style.cursor = 'move';
-			};
-
-			CV.onmouseup = function() {
-				mousePressed = false;
-			};
-
-			CV.onmousemove = function(event){
-				event.preventDefault();
-				event.stopPropagation();
-
-				CV.style.cursor='move';
-				pmouse.x = mouse.x;
-				pmouse.y = mouse.y;
-				mouse.x = event.pageX-dx;
-				mouse.y = event.pageY-dy;
-
-				if (mousePressed == true){
-					threeMesh.rotation.x += (mouse.y-pmouse.y) / 100;
-					threeMesh.rotation.y += (mouse.x-pmouse.x) / 100;
-				}
-			};
-
-			CV2.onmousedown = function(evt) {
-				evt.preventDefault();
-				evt.stopPropagation();
-				CV.style.cursor='pointer';
-				mousePressed = true;
-			};
-
-			CV2.onmouseup = function() {
-				mousePressed = false;
-				selected=-1;
-				changeMesh(meshResolution);
-			};
-
-			CV2.onmousemove = function(event){
-				dx = getPositionLeft(document.getElementById("threejs_container"))-5;
-				dy = getPositionTop(document.getElementById("threejs_container"))-5;
-
-				pmouse.x = mouse.x;
-				pmouse.y = mouse.y;
-
-				mouse.x = event.pageX - dx;
-				mouse.y = event.pageY - dy;
-
-				showControlPts();
-			};
+			bind3DMouseEvents();
+			bindSplineEvents();
+			bindModeButtons();
 		} else {
 			// TODO: Inform user that webgl won't work
 		}
+	}
 
-		bindModeButtons();
+	/**
+	 * Sets up events for manipulating the spline
+	 */
+	function bindSplineEvents() {
+		splineCanvas.onmousedown = function(evt) {
+			evt.preventDefault();
+			evt.stopPropagation();
+			canvas3D.style.cursor='pointer';
+			mousePressed = true;
+		};
+
+		splineCanvas.onmouseup = function() {
+			mousePressed = false;
+			selected=-1;
+			changeMesh(meshResolution);
+		};
+
+		splineCanvas.onmousemove = function(event){
+			dx = getPositionLeft(document.getElementById("workspace"))-5;
+			dy = getPositionTop(document.getElementById("workspace"))-5;
+
+			pmouse.x = mouse.x;
+			pmouse.y = mouse.y;
+
+			mouse.x = event.pageX - dx;
+			mouse.y = event.pageY - dy;
+
+			showControlPts();
+		};
+	}
+
+	/**
+	 * Sets up events for browsing the 3d view 
+	 */
+	function bind3DMouseEvents() {
+		canvas3D.onmousedown = function(evt) {
+			mousePressed = true;
+			evt.preventDefault();
+			evt.stopPropagation();
+			canvas3D.style.cursor = 'move';
+		};
+
+		canvas3D.onmouseup = function() {
+			mousePressed = false;
+		};
+
+		canvas3D.onmousemove = function(e){
+			e.preventDefault();
+			e.stopPropagation();
+
+			canvas3D.style.cursor='move';
+			pmouse.x = mouse.x;
+			pmouse.y = mouse.y;
+			mouse.x = e.pageX-dx;
+			mouse.y = e.pageY-dy;
+
+			if( mousePressed == true ) {
+				threeMesh.rotation.x += (mouse.y-pmouse.y) / 100;
+				threeMesh.rotation.y += (mouse.x-pmouse.x) / 100;
+			}
+		};
 	}
 
 	/**
@@ -146,7 +155,7 @@ var SakeSetCreator = function(params) {
 		showControlPts();
 		threeMesh.rotation.x = 0;
 
-		CV2.style.visibility = "visible";
+		splineCanvas.style.visibility = "visible";
 
 		$("#drawButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/edit-active.png");
 		$("#rotateButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/rotate.png");
@@ -157,7 +166,7 @@ var SakeSetCreator = function(params) {
 	 * Allows user to rotate generated model
 	 */
 	function enterRotateMode() {
-		CV2.style.visibility = "hidden";
+		splineCanvas.style.visibility = "hidden";
 
 		$("#drawButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/edit.png");
 		$("#rotateButton").attr("src","https://www.shapeways.com/creators/sake_set/UI/rotate-active.png");
@@ -204,14 +213,14 @@ var SakeSetCreator = function(params) {
 	 * TODO: document initRenderer
 	 */
 	function initRenderer() {
-		CV2 = document.createElement('canvas');
-		CV2.id = "canvas2D";
-		CV2.width = 700;
-		CV2.height = 590;
+		splineCanvas = document.createElement('canvas');
+		splineCanvas.id = "canvas2D";
+		splineCanvas.width = 700;
+		splineCanvas.height = 590;
 
-		$("#threejs_container").append(CV2);
+		$("#workspace").append(splineCanvas);
 
-		ctx = CV2.getContext('2d');
+		splineCanvasCtx = splineCanvas.getContext('2d');
 
 		renderer = isWebGLSupported() ? new THREE.WebGLRenderer() : new THREE.CanvasRenderer();
 
@@ -226,7 +235,7 @@ var SakeSetCreator = function(params) {
 		container.appendChild(renderer.domElement ,container.firstChild);
 		renderer.domElement.setAttribute("id", "renderer");
 
-		CV = renderer.domElement;
+		canvas3D = renderer.domElement;
 		
 		//create first mesh
 		changeMesh(meshResolution);
@@ -454,29 +463,29 @@ var SakeSetCreator = function(params) {
 	 * TODO: document renderSpline
 	 */
 	function renderSpline(pts) {
-		ctx.beginPath();
+		splineCanvasCtx.beginPath();
 		
 		// draw points
 		for (var i=1; i<pts.length; i++) {
-			ctx.beginPath();
+			splineCanvasCtx.beginPath();
 		
 			var px = pts[i].x*1.2+pdx;
 			var py = (starty-pts[i].y*1.2)+pdy;
 
 			if (i==selected) {
-				ctx.fillStyle = "rgba(255,102,51,1)";
+				splineCanvasCtx.fillStyle = "rgba(255,102,51,1)";
 			} else {
-				ctx.fillStyle = "rgba(41,171,226,.8)";
+				splineCanvasCtx.fillStyle = "rgba(41,171,226,.8)";
 			}
 
-			ctx.arc(px,py,6,0,Math.PI*2);
-			ctx.fill();
-			ctx.closePath();
+			splineCanvasCtx.arc(px,py,6,0,Math.PI*2);
+			splineCanvasCtx.fill();
+			splineCanvasCtx.closePath();
 		}
 
 		//draw spline
-		ctx.strokeStyle="rgba(41,171,226,1)";
-		ctx.beginPath();
+		splineCanvasCtx.strokeStyle="rgba(41,171,226,1)";
+		splineCanvasCtx.beginPath();
 
 		var splinepts = spline.computeVertices(8);
 
@@ -485,14 +494,14 @@ var SakeSetCreator = function(params) {
 			var py = (starty - splinepts[i].y * 1.2) + pdy;
 		
 			if( i==0 ) {
-				ctx.moveTo(px,py);
+				splineCanvasCtx.moveTo(px,py);
 			} else {
-				ctx.lineTo(px,py);
+				splineCanvasCtx.lineTo(px,py);
 			}
 		}
 
-		ctx.stroke();
-		ctx.closePath();
+		splineCanvasCtx.stroke();
+		splineCanvasCtx.closePath();
 	}
 
 	/**
@@ -513,7 +522,7 @@ var SakeSetCreator = function(params) {
 	 */
 	function showControlPts() {
 		var pts = spline.pointList;
-		ctx.clearRect(0,0,700,590);
+		splineCanvasCtx.clearRect(0,0,700,590);
 		renderSpline(pts);
 		
 		//see if you have selected a node only if one is not currently selected
@@ -531,11 +540,11 @@ var SakeSetCreator = function(params) {
 				var py = (starty-pts[i].y*1.2)+pdy;
 
 				if (mouse.distanceTo(new toxi.geom.Vec2D(px,py))<15) {
-					ctx.beginPath();
-					ctx.fillStyle = "rgba(255,102,51,1)";
-					ctx.arc(px,py,6,0,Math.PI*2);
-					ctx.fill();
-					ctx.closePath();
+					splineCanvasCtx.beginPath();
+					splineCanvasCtx.fillStyle = "rgba(255,102,51,1)";
+					splineCanvasCtx.arc(px,py,6,0,Math.PI*2);
+					splineCanvasCtx.fill();
+					splineCanvasCtx.closePath();
 
 					if (mousePressed) {
 						// set the selected node
@@ -565,6 +574,16 @@ var SakeSetCreator = function(params) {
 		spline.add(new toxi.geom.Vec2D(64, -113));
 		spline.add(new toxi.geom.Vec2D(72,-72.5));
 		spline.add(new toxi.geom.Vec2D(93,-47.5));	
+	}
+
+	/**
+	 * TODO: document save
+	 */
+	function save() {
+		geometry = threeMesh.geometry
+		var stlString = generateSTL( geometry );
+		var blob = new Blob([stlString], {type: 'text/plain'});
+		saveAs(blob, prompt("Name the model") + '.stl');
 	}
 
 	init();
