@@ -6,7 +6,16 @@
  */
 var SakeSetCreator = function(params) {
 
-	var opts = $.extend({}, params),
+	var opts = $.extend({
+			defaultSpline: [
+				[0, -160],
+				[27.5, -160],
+				[44, -155],
+				[64, -113],
+				[72, -72.5],
+				[93, -47.5]
+			]
+		}, params),
 		dx = 0, dy = 30,
 		w = 700, h = 590,
 		$module = opts.module,
@@ -293,7 +302,7 @@ var SakeSetCreator = function(params) {
 	 * TODO: document createMesh
 	 */
 	function createMesh() {
-		//should have either 1, 3 or 4 parameters
+		// should have either 1, 3 or 4 parameters
 		var mesh,
 			res,
 			size = 1,
@@ -323,7 +332,7 @@ var SakeSetCreator = function(params) {
 		cpts = spline.computeVertices(8);
 
 		// clean up the points
-		for (var i=0; i<cpts.length-1; i++) {
+		for( var i = 0; i < cpts.length - 1; i++ ) {
 			var pt1 = cpts[i],
 				pt2 = cpts[i + 1];
 
@@ -348,13 +357,13 @@ var SakeSetCreator = function(params) {
 			points.push(tp);
 		}
 
-		var end = spline.pointList[spline.pointList.length-1];
+		var end = spline.pointList[ spline.pointList.length - 1 ];
 
 		// add the end point; this is the edge of the lathe
 		points.push(end);
 
 		// get tangent lines in opposite direction
-		for( var k = cpts.length - 1; k>0; k-- ) {
+		for( var k = cpts.length - 1; k > 0; k-- ) {
 			p = cpts[k];
 			p2 = cpts[k - 1];
 			m = p2.sub(p);
@@ -363,7 +372,7 @@ var SakeSetCreator = function(params) {
 			points.push(tp);
 		}
 
-		points.push(new toxi.geom.Vec2D(begin.x, begin.y+wt));
+		points.push(new toxi.geom.Vec2D(begin.x, begin.y + wt));
 
 		// make the mesh using the new offset curve points
 		var longitudes = [];
@@ -374,37 +383,38 @@ var SakeSetCreator = function(params) {
 		for( var i = 0; i < Lres; i++ ) {
 			var curvepts = [];
 
-			for (var j=0; j<points.length; j++) {
-				var p=points[j];
-				var r=Math.abs(p.x);
-				var x=r*Math.cos(theta);
-				var z=r*Math.sin(theta);
+			for (var j=0; j < points.length; j++) {
+				var p = points[j];
+				var r = Math.abs(p.x);
+				var x = r * Math.cos(theta);
+				var z = r * Math.sin(theta);
 				curvepts.push(new toxi.geom.Vec3D(x, p.y, z));
 			}
 
 			longitudes.push(curvepts);
-			theta+=(Math.PI*2)/Lres;
+			theta += (Math.PI*2) / Lres;
 		}
 
-		for (var i=0; i<longitudes.length-1; i++) { //make triangle strips
-			var p=longitudes[i];
-			var p2=longitudes[i+1];
+		// make triangle strips
+		for( var i=0; i < longitudes.length - 1; i++ ) { 
+			var p = longitudes[i];
+			var p2 = longitudes[i+1];
 
 			for (var j=0; j<p.length-1; j++) {
-				var A= p[j];
-				var B=p2[j];
-				var C=p[j+1];
-				var D=p2[j+1];
+				var A = p[j];
+				var B = p2[j];
+				var C = p[j+1];
+				var D = p2[j+1];
 				mesh.addFace(A,B,C);
 				mesh.addFace(C,B,D);
 			}
 		}
 
-		//make sure to close the last curve with the first curve
+		// make sure to close the last curve with the first curve
 		var p = longitudes[longitudes.length-1];
 		var p2 = longitudes[0];
 
-		for (var j=0; j<p.length-1; j++) {
+		for( var j=0; j < p.length-1; j++ ) {
 			var A = p[j];
 			var B = p2[j];
 			var C = p[j+1];
@@ -417,7 +427,7 @@ var SakeSetCreator = function(params) {
 	}
 
 	/**
-	 * TODO: document renderSpline
+	 * Draws the curve which gets roatated to form the solid object
 	 */
 	function renderSpline(pts) {
 		var px, py;
@@ -522,15 +532,14 @@ var SakeSetCreator = function(params) {
 	 * TODO: document initSpline
 	 */
 	function initSpline() {
+		var splinePoints = opts.defaultSpline;
+		
 		spline = new toxi.geom.Spline2D();
 
 		// the first point must be anchored at x=0; this is the bottom
-		spline.add(new toxi.geom.Vec2D(0, -160));
-		spline.add(new toxi.geom.Vec2D(27.5,-160));
-		spline.add(new toxi.geom.Vec2D(44,-155));
-		spline.add(new toxi.geom.Vec2D(64, -113));
-		spline.add(new toxi.geom.Vec2D(72,-72.5));
-		spline.add(new toxi.geom.Vec2D(93,-47.5));
+		for( var i = 0; i < splinePoints.length; i++ ) {
+			spline.add(new toxi.geom.Vec2D(splinePoints[i][0], splinePoints[i][1]));	
+		}
 	}
 
 	/**
