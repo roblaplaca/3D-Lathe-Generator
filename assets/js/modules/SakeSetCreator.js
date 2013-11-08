@@ -15,17 +15,17 @@ var SakeSetCreator = function(params) {
 		renderer,
 		toxiMesh,
 		container = $("#workspace").get(0),
+		camera = null,
 		mouse = new toxi.geom.Vec2D(),
 		pmouse = new toxi.geom.Vec2D(),
 		stage = new toxi.geom.Vec2D(w,h),
-		camera = new THREE.Camera( 70, stage.x / stage.y, 1, 10000 );
 		scene = new THREE.Scene(),
-		material = new THREE.MeshLambertMaterial( { color: 0xEC008C, shading: THREE.FlatShading } ),
+		material = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading } ),
 		toxiToThreeSupport = new toxi.THREE.ToxiclibsSupport(scene),
 		meshResolution = 20,
 		m = [],
 		modelW = 0,
-		modelH=0,
+		modelH = 0,
 		threeMesh = null,
 		plane = null,
 		starty = 0,
@@ -40,7 +40,7 @@ var SakeSetCreator = function(params) {
 		selected = -1,
 		canvas3D = null,
 		splineCanvas = null,
-		splineCanvasCtx = null; 
+		splineCanvasCtx = null;
 
 	function init() {
 		if( isWebGLSupported() ) {
@@ -51,7 +51,6 @@ var SakeSetCreator = function(params) {
 			bindModeButtons();
 		} else {
 			// TODO: Inform user that webgl won't work
-			alert('test');
 		}
 	}
 
@@ -62,19 +61,19 @@ var SakeSetCreator = function(params) {
 		splineCanvas.onmousedown = function(evt) {
 			evt.preventDefault();
 			evt.stopPropagation();
-			canvas3D.style.cursor='pointer';
+			canvas3D.style.cursor = 'pointer';
 			mousePressed = true;
 		};
 
 		splineCanvas.onmouseup = function() {
 			mousePressed = false;
-			selected=-1;
+			selected = -1;
 			changeMesh(meshResolution);
 		};
 
 		splineCanvas.onmousemove = function(event){
-			dx = getPositionLeft(container)-5;
-			dy = getPositionTop(container)-5;
+			dx = getPositionLeft(container) - 5;
+			dy = getPositionTop(container) - 5;
 
 			pmouse.x = mouse.x;
 			pmouse.y = mouse.y;
@@ -108,12 +107,12 @@ var SakeSetCreator = function(params) {
 			canvas3D.style.cursor='move';
 			pmouse.x = mouse.x;
 			pmouse.y = mouse.y;
-			mouse.x = e.pageX-dx;
-			mouse.y = e.pageY-dy;
+			mouse.x = e.pageX - dx;
+			mouse.y = e.pageY - dy;
 
-			if( mousePressed == true ) {
-				threeMesh.rotation.x += (mouse.y-pmouse.y) / 100;
-				threeMesh.rotation.y += (mouse.x-pmouse.x) / 100;
+			if( mousePressed === true ) {
+				threeMesh.rotation.x += (mouse.y - pmouse.y) / 100;
+				threeMesh.rotation.y += (mouse.x - pmouse.x) / 100;
 			}
 		};
 	}
@@ -169,7 +168,7 @@ var SakeSetCreator = function(params) {
 
 		while(el) {
 			pL += el.offsetLeft;
-			el=el.offsetParent;
+			el = el.offsetParent;
 		}
 
 		return pL;
@@ -206,46 +205,53 @@ var SakeSetCreator = function(params) {
 		splineCanvas.width = 700;
 		splineCanvas.height = 590;
 
-		$("#workspace").append(splineCanvas);
+		$(container).append(splineCanvas);
 
 		splineCanvasCtx = splineCanvas.getContext('2d');
 
-		renderer = isWebGLSupported() ? new THREE.WebGLRenderer() : new THREE.CanvasRenderer();
+		renderer = new THREE.WebGLRenderer();
 
-		setupLights();
-
-		// TODO: move camera init out of initRenderer method
-		camera = new THREE.PerspectiveCamera(50, stage.x / stage.y, 1, 10000);
-		camera.position.y = -10;
-		camera.position.z = 600;
-
-		renderer.setSize(stage.x,stage.y);
+		renderer.setSize(stage.x, stage.y);
 		container.appendChild(renderer.domElement ,container.firstChild);
 		renderer.domElement.setAttribute("id", "renderer");
 
 		canvas3D = renderer.domElement;
-		
-		//create first mesh
+		setupLights();
+		setupCamera();
 		changeMesh(meshResolution);
 		animate();
 
 		enterDrawMode();
 	}
 
+
+	function setupCamera() {
+		camera = new THREE.PerspectiveCamera(50, stage.x / stage.y, 1, 10000);
+		camera.position.y = -10;
+		camera.position.z = 600;
+	}
+
 	/**
 	 * TODO: document setupLights
 	 */
 	function setupLights() {
-		scene.add( new THREE.AmbientLight( 0x330033 ) );
+		// scene.add( new THREE.AmbientLight( 0xeeeeee ) );
 
-		window.directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-		directionalLight.position.set( 0, 1, 0 );
-		directionalLight.position.normalize();
-		scene.add( directionalLight );
+		var hemiLight = new THREE.HemisphereLight( 0x0000ff, 0x00ff00, 0.6 );
+		scene.add(hemiLight);
 
-		var light = new THREE.PointLight( 0xff0000, 1, 100 ); 
-		light.position.set( 50, 50, 50 ); 
-		scene.add( light );
+		// var directionalLight = new THREE.DirectionalLight(0xffffff);
+		// directionalLight.position.set(1, 1, 1).normalize();
+		// scene.add(directionalLight);
+
+		// window.directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+		// directionalLight.position.set( 0, 1, 0 );
+		// directionalLight.position.normalize();
+		// scene.add( directionalLight );
+
+		// var light = new THREE.PointLight( 0xff0000, 1, 100 ); 
+		// light.position.set( 50, 50, 50 ); 
+		// scene.add( light );
 	}
 
 	/**
@@ -262,6 +268,7 @@ var SakeSetCreator = function(params) {
 
 		toxiMesh = createMesh( new toxi.geom.mesh.TriangleMesh(), res, 1, true );
 		threeMesh = toxiToThreeSupport.addMesh(toxiMesh, material);
+
 		threeMesh.doubleSided = true;
 		threeMesh.overdraw = true;
 		scene.add(threeMesh);
@@ -291,7 +298,8 @@ var SakeSetCreator = function(params) {
 			res,
 			size = 1,
 			wt = wallthickness / 2,
-			isClosed = true;
+			isClosed = true,
+			p, p2, m, t, tp;
 
 		if( arguments.length == 1 ) {
 			res = arguments[0];
@@ -317,10 +325,10 @@ var SakeSetCreator = function(params) {
 		// clean up the points
 		for (var i=0; i<cpts.length-1; i++) {
 			var pt1 = cpts[i],
-				pt2 = cpts[i+1];
+				pt2 = cpts[i + 1];
 
-			if((pt2.y-pt1.y)<.1) {
-				cpts.splice(i,1);
+			if( (pt2.y - pt1.y) < 0.1) {
+				cpts.splice(i, 1);
 			}
 		}
 
@@ -330,12 +338,13 @@ var SakeSetCreator = function(params) {
 
 		points.push(new toxi.geom.Vec2D(begin.x, begin.y-wt));
 
-		for (var i=0; i<cpts.length-1; i++) { //add points offset from spline points
-			var p = cpts[i];
-			var p2 = cpts[i+1];
-			var m = p2.sub(p);
-			var t = m.perpendicular().normalize();
-			var tp = p.sub(t.scale(wt));
+		// add points offset from spline points
+		for ( var j = 0; j < cpts.length - 1; j++) {
+			p = cpts[j];
+			p2 = cpts[j + 1];
+			m = p2.sub(p);
+			t = m.perpendicular().normalize();
+			tp = p.sub(t.scale(wt));
 			points.push(tp);
 		}
 
@@ -345,12 +354,12 @@ var SakeSetCreator = function(params) {
 		points.push(end);
 
 		// get tangent lines in opposite direction
-		for (var i=cpts.length-1; i>0; i--) {
-			var p = cpts[i];
-			var p2 = cpts[i-1];
-			var m = p2.sub(p);
-			var t = m.perpendicular().normalize();
-			var tp = p.sub(t.scale(wt));
+		for( var k = cpts.length - 1; k>0; k-- ) {
+			p = cpts[k];
+			p2 = cpts[k - 1];
+			m = p2.sub(p);
+			t = m.perpendicular().normalize();
+			tp = p.sub( t.scale(wt) );
 			points.push(tp);
 		}
 
@@ -362,7 +371,7 @@ var SakeSetCreator = function(params) {
 		var theta = 0;
 
 		// longitude curves going around
-		for (var i=0; i<Lres; i++) {
+		for( var i = 0; i < Lres; i++ ) {
 			var curvepts = [];
 
 			for (var j=0; j<points.length; j++) {
@@ -411,16 +420,16 @@ var SakeSetCreator = function(params) {
 	 * TODO: document renderSpline
 	 */
 	function renderSpline(pts) {
+		var px, py;
+
 		splineCanvasCtx.beginPath();
-		
 		// draw points
 		for (var i=1; i<pts.length; i++) {
 			splineCanvasCtx.beginPath();
-		
-			var px = pts[i].x*1.2+pdx;
-			var py = (starty-pts[i].y*1.2)+pdy;
+			px = pts[i].x * 1.2 + pdx;
+			py = (starty - pts[i].y * 1.2) + pdy;
 
-			if (i==selected) {
+			if( i == selected ) {
 				splineCanvasCtx.fillStyle = "rgba(255,102,51,1)";
 			} else {
 				splineCanvasCtx.fillStyle = "rgba(41,171,226,.8)";
@@ -431,17 +440,17 @@ var SakeSetCreator = function(params) {
 			splineCanvasCtx.closePath();
 		}
 
-		//draw spline
+		// draw spline
 		splineCanvasCtx.strokeStyle="rgba(41,171,226,1)";
 		splineCanvasCtx.beginPath();
 
 		var splinepts = spline.computeVertices(8);
 
-		for (var i=0; i<splinepts.length; i++) {
-			var px = splinepts[i].x * 1.2 + pdx;
-			var py = (starty - splinepts[i].y * 1.2) + pdy;
-		
-			if( i==0 ) {
+		for(var i = 0; i < splinepts.length; i++ ) {
+			px = splinepts[i].x * 1.2 + pdx;
+			py = (starty - splinepts[i].y * 1.2) + pdy;
+
+			if( i == 0 ) {
 				splineCanvasCtx.moveTo(px,py);
 			} else {
 				splineCanvasCtx.lineTo(px,py);
@@ -473,27 +482,28 @@ var SakeSetCreator = function(params) {
 		splineCanvasCtx.clearRect(0,0,700,590);
 		renderSpline(pts);
 		
-		//see if you have selected a node only if one is not currently selected
-		if (selected>0) {
-			if (mouse.x>(w/2+12)) { //make sure the points don't go past the center line + 12mm
-				pts[selected].x=(mouse.x-pdx)/1.2;
+		// see if you have selected a node only if one is not currently selected
+		if (selected > 0) {
+			// make sure the points don't go past the center line + 12mm
+			if( mouse.x > (w/2+12)) { 
+				pts[selected].x = (mouse.x - pdx) / 1.2;
 			}
-			pts[selected].y=(starty-(mouse.y-pdy))/1.2;
+			pts[selected].y = (starty - (mouse.y - pdy) ) / 1.2;
 		} else {
-			//skip the first point
+			// skip the first point
 			for (var i=1; i<pts.length; i++) {
 
-				var px = pts[i].x*1.2+pdx;
-				var py = (starty-pts[i].y*1.2)+pdy;
+				var px = pts[i].x * 1.2 + pdx;
+				var py = (starty - pts[i].y * 1.2) + pdy;
 
-				if (mouse.distanceTo(new toxi.geom.Vec2D(px,py))<15) {
+				if( mouse.distanceTo(new toxi.geom.Vec2D(px,py)) < 15 ) {
 					splineCanvasCtx.beginPath();
 					splineCanvasCtx.fillStyle = "rgba(255,102,51,1)";
 					splineCanvasCtx.arc(px,py,6,0,Math.PI*2);
 					splineCanvasCtx.fill();
 					splineCanvasCtx.closePath();
 
-					if (mousePressed) {
+					if( mousePressed ) {
 						// set the selected node
 						selected = i;
 					}
@@ -503,9 +513,9 @@ var SakeSetCreator = function(params) {
 
 		var h = pts[pts.length-1];
 
-		//here we add a little to account for wall thickness
-		modelH = Math.floor((h.y-pts[0].y)/2)+2;
-		modelW = Math.floor(getMaxX(cpts))+3;
+		// here we add a little to account for wall thickness
+		modelH = Math.floor( ( h.y-pts[0].y ) / 2) + 2;
+		modelW = Math.floor( getMaxX(cpts) ) + 3;
 	}
 
 	/**
@@ -520,20 +530,23 @@ var SakeSetCreator = function(params) {
 		spline.add(new toxi.geom.Vec2D(44,-155));
 		spline.add(new toxi.geom.Vec2D(64, -113));
 		spline.add(new toxi.geom.Vec2D(72,-72.5));
-		spline.add(new toxi.geom.Vec2D(93,-47.5));	
+		spline.add(new toxi.geom.Vec2D(93,-47.5));
 	}
 
 	/**
-	 * TODO: document save
+	 * Generates an STL out of the current object
 	 */
 	function save() {
-		geometry = threeMesh.geometry
-		var stlString = generateSTL( geometry );
-		var blob = new Blob([stlString], {type: 'text/plain'});
+		var geometry = threeMesh.geometry,
+			stlString = generateSTL( geometry ),
+			blob = new Blob([stlString], { type: "text/plain" });
+
 		saveAs(blob, prompt("Name the model") + '.stl');
 	}
 
 	init();
 
-	return;
+	return {
+		save: save
+	};
 };
