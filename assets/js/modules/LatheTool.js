@@ -20,14 +20,13 @@
 
 		function init() {
 			if( $module !== null ) {
-				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 1000 );
-				camera.position.set( 0, 0, 500 );
+				setupCamera();
 
 				scene = new THREE.Scene();
-
 				group = new THREE.Object3D();
+
 				resetModelPosition();
-				group.rotation.x = -1.57;
+				group.rotation.x = -(Math.PI / 2);
 				scene.add( group );
 
 				//////////////
@@ -79,6 +78,14 @@
 			} else {
 				throw new Error("instance is a required parameter");
 			}
+		}
+
+		/**
+		 * Initialize camera
+		 */ 
+		function setupCamera() {
+			camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 1000 );
+			camera.position.set( 0, 0, 500 );
 		}
 
 		/**
@@ -147,7 +154,7 @@
 		 */
 		function resetModelPosition() {
 			targetRotation = 0;
-			targetYRotation =  -1.57;
+			targetYRotation =  -(Math.PI / 2);
 		}
 
 		/**
