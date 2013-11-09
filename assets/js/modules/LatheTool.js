@@ -1,10 +1,10 @@
 (function() {
 	window.LatheTool = function(params) {
 		var opts = $.extend({
-				numSides: 4
+				numSides: 4,
+				meshColor: 0x00aedb
 			}, params),
 			$module = opts.instance || null,
-			container,
 			camera, scene, renderer,
 			group, mesh,
 			targetRotation = 0,
@@ -20,8 +20,6 @@
 
 		function init() {
 			if( $module !== null ) {
-				container = $module.get(0);
-
 				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 1000 );
 				camera.position.set( 0, 0, 500 );
 
@@ -36,8 +34,6 @@
 				var squareShape = new THREE.Shape();
 
 				squareShape.moveTo( 0, 100 );
-				// squareShape.quadraticCurveTo( -300, 20, -100, 0);
-				// .arc ( aX, aY, aRadius, aStartAngle, aEndAngle, aClockwise ) 
 				squareShape.arc(0, 0, 25, 1.57079633, 4.71238898, false);
 				squareShape.moveTo( 0, 85 );
 				squareShape.lineTo( -35, 70 );
@@ -60,7 +56,7 @@
 				}
 
 				var lathe = new THREE.LatheGeometry( pts, opts.numSides),	
-					latheMaterial = new THREE.MeshBasicMaterial( { color: 0x00aedb, wireframe: true, transparent: true });
+					latheMaterial = new THREE.MeshBasicMaterial( { color: opts.meshColor, wireframe: true, transparent: true });
 
 				mesh = new THREE.Mesh( lathe, latheMaterial);
 
@@ -74,7 +70,7 @@
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 
-				container.appendChild( renderer.domElement );
+				$module.append( renderer.domElement );
 
 				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
 				window.addEventListener( 'resize', onWindowResize, false );
