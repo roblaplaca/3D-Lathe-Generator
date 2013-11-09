@@ -81,9 +81,6 @@
 				container.appendChild( renderer.domElement );
 
 				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
-				document.addEventListener( 'touchmove', onDocumentTouchMove, false );
-
 				window.addEventListener( 'resize', onWindowResize, false );
 
 				animate();
@@ -93,7 +90,7 @@
 		}
 
 		/**
-		 * 
+		 * Ensure everything fits in the camera properly when the window is resized
 		 */ 
 		function onWindowResize() {
 			windowHalfX = window.innerWidth / 2;
@@ -106,7 +103,8 @@
 		}
 
 		/**
-		 * 
+		 * When the mouse is down enter inspection mode, allowing the user
+		 * to rotate the group on the x/y axis
 		 */
 		function onDocumentMouseDown( e ) {
 			e.preventDefault();
@@ -120,20 +118,18 @@
 		}
 
 		/**
-		 * 
+		 * Once in inspection mode, moving the mouse updates the x/y axis position of the group
 		 */
 		function onDocumentMouseMove( e ) {
-
 			mouseX = e.clientX - windowHalfX;
 			mouseY = e.clientY - windowHalfY;
 
 			targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.02;
 			targetYRotation = targetYRotationOnMouseDown + ( mouseY - mouseYOnMouseDown ) * 0.02;
-
 		}
 
 		/**
-		 * 
+		 * Leave inspection mode, and reset model to the default position
 		 */
 		function onDocumentMouseUp( e ) {
 			document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
@@ -144,15 +140,7 @@
 		}
 
 		/**
-		 * 
-		 */
-		function resetModelPosition() {
-			targetRotation = 0;
-			targetYRotation =  -1.57;
-		}
-
-		/**
-		 * 
+		 * Leave inspection mode, and reset model to the default position
 		 */
 		function onDocumentMouseOut( e ) {
 			document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
@@ -161,36 +149,17 @@
 
 			resetModelPosition();
 		}
-
+		
 		/**
-		 * 
+		 * Resets model to default position
 		 */
-		function onDocumentTouchStart( e ) {
-			if ( e.touches.length == 1 ) {
-				e.preventDefault();
-
-				mouseXOnMouseDown = e.touches[ 0 ].pageX - windowHalfX;
-				mouseYOnMouseDown = e.touches[ 0 ].pageY - windowHalfY;
-				targetRotationOnMouseDown = targetRotation;
-				targetYRotationOnMouseDown = targetYRotation;
-			}
+		function resetModelPosition() {
+			targetRotation = 0;
+			targetYRotation =  -1.57;
 		}
 
 		/**
-		 * 
-		 */
-		function onDocumentTouchMove( e ) {
-			if ( e.touches.length == 1 ) {
-				e.preventDefault();
-
-				mouseX = e.touches[ 0 ].pageX - windowHalfX;
-				mouseY = e.touches[ 0 ].pageY - windowHalfY;
-				targetYRotation = targetYRotationOnMouseDown + ( mouseY - mouseYOnMouseDown ) * 0.05;
-			}
-		}
-
-		/**
-		 * 
+		 * Kick off the animation loop
 		 */
 		function animate() {
 			requestAnimationFrame( animate );
@@ -198,7 +167,7 @@
 		}
 
 		/**
-		 * 
+		 * Render loop for displaying the model
 		 */
 		function render() {
 			group.rotation.y += ( targetRotation - group.rotation.y ) * 0.05;
@@ -207,7 +176,8 @@
 		}
 
 		/**
-		 * 
+		 * Prompts the user for the output file name, and uses a library
+		 * to generate a downloadable STL
 		 */
 		function save() {
 			var geometry = mesh.geometry,
