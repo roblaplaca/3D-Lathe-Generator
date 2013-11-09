@@ -98,8 +98,8 @@
 					pts.push(new THREE.Vector3(heartPoints[i].x, 0, heartPoints[i].y));
 				}
 
-				var lathe = new THREE.LatheGeometry( pts, 30),	
-					latheMaterial = new THREE.MeshBasicMaterial( { color: 0x00cc00, wireframe: true, transparent: true });
+				var lathe = new THREE.LatheGeometry( pts, 12),	
+					latheMaterial = new THREE.MeshBasicMaterial( { color: 0x00aedb, wireframe: true, transparent: true });
 
 				window.mesh = new THREE.Mesh( lathe, latheMaterial);
 
