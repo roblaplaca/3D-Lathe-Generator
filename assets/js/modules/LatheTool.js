@@ -19,6 +19,8 @@
 			windowHalfY = window.innerHeight / 2;
 
 		function init() {
+			var shapePoints = [];
+
 			if( $module !== null ) {
 				setupCamera();
 
@@ -30,7 +32,7 @@
 				group.rotation.x = -(Math.PI / 2);
 				scene.add( group );
 
-				var shapePoints = createShape();
+				shapePoints = createShape();
 				addShape(shapePoints);
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
