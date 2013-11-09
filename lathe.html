@@ -9,14 +9,27 @@
 		<link rel="stylesheet" href="assets/css/lathe-tool.css" />
 	</head>
 	<body>
+		<div class="project-info">
+			Pawn generated using THREE.js LatheGeometry. 
+			<a href="javascript:window.latheTool.save();">Click to save STL</a><br/>
+			Drag to spin
+		</div>
+
+		<div class="module module-lathe-tool" data-name="lathe-tool">
+			<!-- Container for module -->
+		</div>
+
 		<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-		<script src="/assets/js/libs/FileSaver.js"></script>
-    	<script src="/assets/js/libs/stlWriter.js"></script>
-		<script src="/assets/js/libs/Three.js"></script>
-		<script src="/assets/js/modules/LatheTool.js"></script>
+		<script src="assets/js/libs/FileSaver.js"></script>
+    	<script src="assets/js/libs/stlWriter.js"></script>
+		<script src="assets/js/libs/Three.js"></script>
+		<script src="assets/js/modules/LatheTool.js"></script>
 		<script>
 			$(function() {
-				window.latheTool = new LatheTool();
+				// TODO: make window.latheTool private, temporarily public to preserve functionality while in flux
+				window.latheTool = new LatheTool({
+					instance: $(".module-lathe-tool").eq(0)
+				});
 			});
 		</script>
 	</body>
