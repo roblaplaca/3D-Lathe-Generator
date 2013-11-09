@@ -14,12 +14,13 @@
 		</style>
 	</head>
 	<body>
+		<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 		<script src="/assets/js/libs/FileSaver.js"></script>
     	<script src="/assets/js/libs/stlWriter.js"></script>
 		<script src="/assets/js/libs/Three.js"></script>
 		<script>
 
-			var container, stats;
+			var container;
 
 			var camera, scene, renderer;
 
@@ -119,19 +120,11 @@
 
 				container.appendChild( renderer.domElement );
 
-				// stats = new Stats();
-				// stats.domElement.style.position = 'absolute';
-				// stats.domElement.style.top = '0px';
-				// container.appendChild( stats.domElement );
-
 				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
 				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
 				document.addEventListener( 'touchmove', onDocumentTouchMove, false );
 
-				//
-
 				window.addEventListener( 'resize', onWindowResize, false );
-
 			}
 
 			function onWindowResize() {
