@@ -46,9 +46,12 @@
 
 		/**
 		 * Adds a shape to the view and then lathes it
+		 * addShape(points) - renders shape with default definition
+		 * addShape(points, definition) - renders shape with custom definition, however doesn't reset default
 		 */
-		function addShape(points) {
-			var lathe = new THREE.LatheGeometry( points, opts.numSides),	
+		function addShape(points, definition) {
+			var definition = definition || opts.numSides,
+				lathe = new THREE.LatheGeometry( points, definition ),	
 				latheMaterial = new THREE.MeshBasicMaterial( { color: opts.meshColor, wireframe: true, transparent: true });
 
 			clearShape();

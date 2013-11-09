@@ -26,6 +26,7 @@
 		<script src="assets/js/modules/Lathe.js"></script>
 		<script>
 			$(function() {
+
 				var lathe = new Lathe({
 					instance: $(".module-lathe-tool").eq(0)
 				});
@@ -35,6 +36,7 @@
 					lathe.save();
 				});
 
+				// Generate points for various shapes
 				function createPawnShape() {
 					var shape = new THREE.Shape(),
 						shapePoints = [],
@@ -61,10 +63,11 @@
 					}
 
 					return adjustedPoints;
-				}
+				}		
 
+				// Send shape points to the lathe for rendering
 				var shapePoints = createPawnShape();
-				lathe.addShape(shapePoints);
+				lathe.addShape(shapePoints, 16);
 			});
 		</script>
 	</body>
