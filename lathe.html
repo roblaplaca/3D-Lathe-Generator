@@ -10,9 +10,9 @@
 	</head>
 	<body>
 		<div class="project-info">
-			Pawn generated using THREE.js LatheGeometry. 
-			<a href="javascript:window.latheTool.save();">Click to save STL</a><br/>
-			Drag left/right &amp; up/down to inspect
+			Pawn generated using THREE.js LatheGeometry. <br />
+			Drag left/right &amp; up/down to inspect 
+			<a class="save-stl" href="#">Click to save STL</a> 
 		</div>
 
 		<div class="module module-lathe-tool" data-name="lathe-tool">
@@ -23,13 +23,48 @@
 		<script src="assets/js/libs/FileSaver.js"></script>
     	<script src="assets/js/libs/stlWriter.js"></script>
 		<script src="assets/js/libs/Three.js"></script>
-		<script src="assets/js/modules/LatheTool.js"></script>
+		<script src="assets/js/modules/Lathe.js"></script>
 		<script>
 			$(function() {
-				// TODO: make window.latheTool private, temporarily public to preserve functionality while in flux
-				window.latheTool = new LatheTool({
+				var lathe = new Lathe({
 					instance: $(".module-lathe-tool").eq(0)
 				});
+
+				$(".save-stl").click(function(e) {
+					e.preventDefault();
+					lathe.save();
+				});
+
+				function createPawnShape() {
+					var shape = new THREE.Shape(),
+						shapePoints = [],
+						adjustedPoints = [];
+
+					shape.moveTo( 0, 100 );
+					shape.arc(0, 0, 25, 1.57079633, 4.71238898, false);
+					shape.moveTo( 0, 85 );
+					shape.lineTo( -35, 70 );
+					shape.lineTo( -15, 60 );
+					shape.lineTo( -15, 0 );
+					shape.quadraticCurveTo( -30, -10, -10, -10);
+					shape.quadraticCurveTo( -40, 0, -40, -20);
+					shape.quadraticCurveTo( -50, -20, -45, -30);
+
+					shape.lineTo( 0, -30 );
+					shape.moveTo( 0, -30 );
+
+					shapePoints = shape.extractPoints().shape;
+
+					// TODO: create helper to rotate axis of points
+					for( var i = 0; i < shapePoints.length; i++ ) {
+						adjustedPoints.push( new THREE.Vector3(shapePoints[i].x, 0, shapePoints[i].y) );
+					}
+
+					return adjustedPoints;
+				}
+
+				var shapePoints = createPawnShape();
+				lathe.addShape(shapePoints);
 			});
 		</script>
 	</body>

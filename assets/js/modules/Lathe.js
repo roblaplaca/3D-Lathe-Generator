@@ -1,5 +1,5 @@
 (function() {
-	window.LatheTool = function(params) {
+	window.Lathe = function(params) {
 		var opts = $.extend({
 				numSides: 4,
 				meshColor: 0x00aedb
@@ -19,8 +19,6 @@
 			windowHalfY = window.innerHeight / 2;
 
 		function init() {
-			var shapePoints = [];
-
 			if( $module !== null ) {
 				setupCamera();
 
@@ -32,50 +30,18 @@
 				group.rotation.x = -(Math.PI / 2);
 				scene.add( group );
 
-				shapePoints = createShape();
-				addShape(shapePoints);
-
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 
 				$module.append( renderer.domElement );
 
-				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-				window.addEventListener( 'resize', onWindowResize, false );
+				document.addEventListener('mousedown', onDocumentMouseDown, false );
+				window.addEventListener('resize', onWindowResize, false );
 
 				animate();
 			} else {
 				throw new Error("instance is a required parameter");
 			}
-		}
-
-		/**
-		 * Returns a set of points for a shape
-		 */
-		function createShape() {
-			var shape = new THREE.Shape();
-
-			shape.moveTo( 0, 100 );
-			shape.arc(0, 0, 25, 1.57079633, 4.71238898, false);
-			shape.moveTo( 0, 85 );
-			shape.lineTo( -35, 70 );
-			shape.lineTo( -15, 60 );
-			shape.lineTo( -15, 0 );
-			shape.quadraticCurveTo( -30, -10, -10, -10);
-			shape.quadraticCurveTo( -40, 0, -40, -20);
-			shape.quadraticCurveTo( -50, -20, -45, -30);
-
-			shape.lineTo( 0, -30 );
-			shape.moveTo( 0, -30 );
-
-			var shapePoints = shape.extractPoints().shape,
-				points = [];
-
-			for(var i=0; i<shapePoints.length; i++) {
-				points.push(new THREE.Vector3(shapePoints[i].x, 0, shapePoints[i].y));
-			}
-
-			return points;
 		}
 
 		/**
