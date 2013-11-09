@@ -72,8 +72,6 @@
 				mesh.overdraw = true;
 				mesh.doubleSided = true;
 
-
-
 				group.add( mesh );
 				//////////////
 
@@ -87,13 +85,17 @@
 				document.addEventListener( 'touchmove', onDocumentTouchMove, false );
 
 				window.addEventListener( 'resize', onWindowResize, false );
+
+				animate();
 			} else {
 				throw new Error("instance is a required parameter");
 			}
 		}
 
+		/**
+		 * 
+		 */ 
 		function onWindowResize() {
-
 			windowHalfX = window.innerWidth / 2;
 			windowHalfY = window.innerHeight / 2;
 
@@ -101,51 +103,58 @@
 			camera.updateProjectionMatrix();
 
 			renderer.setSize( window.innerWidth, window.innerHeight );
-
 		}
 
-		//
-
-		function onDocumentMouseDown( event ) {
-
-			event.preventDefault();
+		/**
+		 * 
+		 */
+		function onDocumentMouseDown( e ) {
+			e.preventDefault();
 
 			document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 			document.addEventListener( 'mouseup', onDocumentMouseUp, false );
 			document.addEventListener( 'mouseout', onDocumentMouseOut, false );
 
-			mouseXOnMouseDown = event.clientX - windowHalfX;
+			mouseXOnMouseDown = e.clientX - windowHalfX;
 			targetRotationOnMouseDown = targetRotation;
-
 		}
 
-		function onDocumentMouseMove( event ) {
+		/**
+		 * 
+		 */
+		function onDocumentMouseMove( e ) {
 
-			mouseX = event.clientX - windowHalfX;
-			mouseY = event.clientY - windowHalfY;
+			mouseX = e.clientX - windowHalfX;
+			mouseY = e.clientY - windowHalfY;
 
 			targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.02;
 			targetYRotation = targetYRotationOnMouseDown + ( mouseY - mouseYOnMouseDown ) * 0.02;
 
 		}
 
-		function onDocumentMouseUp( event ) {
-
+		/**
+		 * 
+		 */
+		function onDocumentMouseUp( e ) {
 			document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
 			document.removeEventListener( 'mouseup', onDocumentMouseUp, false );
 			document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
 
-			
 			resetModelPosition();
 		}
 
+		/**
+		 * 
+		 */
 		function resetModelPosition() {
 			targetRotation = 0;
 			targetYRotation =  -1.57;
 		}
 
-		function onDocumentMouseOut( event ) {
-
+		/**
+		 * 
+		 */
+		function onDocumentMouseOut( e ) {
 			document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
 			document.removeEventListener( 'mouseup', onDocumentMouseUp, false );
 			document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
@@ -153,46 +162,53 @@
 			resetModelPosition();
 		}
 
-		function onDocumentTouchStart( event ) {
+		/**
+		 * 
+		 */
+		function onDocumentTouchStart( e ) {
+			if ( e.touches.length == 1 ) {
+				e.preventDefault();
 
-			if ( event.touches.length == 1 ) {
-
-				event.preventDefault();
-
-				mouseXOnMouseDown = event.touches[ 0 ].pageX - windowHalfX;
-				mouseYOnMouseDown = event.touches[ 0 ].pageY - windowHalfY;
+				mouseXOnMouseDown = e.touches[ 0 ].pageX - windowHalfX;
+				mouseYOnMouseDown = e.touches[ 0 ].pageY - windowHalfY;
 				targetRotationOnMouseDown = targetRotation;
 				targetYRotationOnMouseDown = targetYRotation;
-
 			}
-
 		}
 
-		function onDocumentTouchMove( event ) {
+		/**
+		 * 
+		 */
+		function onDocumentTouchMove( e ) {
+			if ( e.touches.length == 1 ) {
+				e.preventDefault();
 
-			if ( event.touches.length == 1 ) {
-
-				event.preventDefault();
-
-				mouseX = event.touches[ 0 ].pageX - windowHalfX;
-				mouseY = event.touches[ 0 ].pageY - windowHalfY;
+				mouseX = e.touches[ 0 ].pageX - windowHalfX;
+				mouseY = e.touches[ 0 ].pageY - windowHalfY;
 				targetYRotation = targetYRotationOnMouseDown + ( mouseY - mouseYOnMouseDown ) * 0.05;
-
 			}
-
 		}
 
+		/**
+		 * 
+		 */
 		function animate() {
 			requestAnimationFrame( animate );
 			render();
 		}
 
+		/**
+		 * 
+		 */
 		function render() {
 			group.rotation.y += ( targetRotation - group.rotation.y ) * 0.05;
 			group.rotation.x += ( targetYRotation - group.rotation.x ) * 0.05;
 			renderer.render( scene, camera );
 		}
 
+		/**
+		 * 
+		 */
 		function save() {
 			var geometry = mesh.geometry,
 				stlString = generateSTL( geometry ),
@@ -202,7 +218,6 @@
 		}
 
 		init();
-		animate();
 
 		return {
 			save: save
