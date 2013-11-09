@@ -27,10 +27,6 @@
 
 				scene = new THREE.Scene();
 
-				var light = new THREE.DirectionalLight( 0xffffff );
-				light.position.set( 0, 0, 1 );
-				scene.add( light );
-
 				group = new THREE.Object3D();
 				resetModelPosition();
 				group.rotation.x = -1.57;
@@ -149,7 +145,7 @@
 
 			resetModelPosition();
 		}
-		
+
 		/**
 		 * Resets model to default position
 		 */
