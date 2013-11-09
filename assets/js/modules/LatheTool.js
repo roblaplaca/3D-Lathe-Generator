@@ -26,45 +26,12 @@
 				group = new THREE.Object3D();
 
 				resetModelPosition();
+
 				group.rotation.x = -(Math.PI / 2);
 				scene.add( group );
 
-				//////////////
-				var squareShape = new THREE.Shape();
-
-				squareShape.moveTo( 0, 100 );
-				squareShape.arc(0, 0, 25, 1.57079633, 4.71238898, false);
-				squareShape.moveTo( 0, 85 );
-				squareShape.lineTo( -35, 70 );
-				squareShape.lineTo( -15, 60 );
-				squareShape.lineTo( -15, 0 );
-				squareShape.quadraticCurveTo( -30, -10, -10, -10);
-				squareShape.quadraticCurveTo( -40, 0, -40, -20);
-				squareShape.quadraticCurveTo( -50, -20, -45, -30);
-
-				squareShape.lineTo( 0, -30 );
-				squareShape.moveTo( 0, -30 );
-
-				var heartPoints = squareShape.extractPoints().shape,
-					pts = [];
-
-					console.log("heartPoints: ", heartPoints);
-
-				for(var i=0; i<heartPoints.length; i++) {
-					pts.push(new THREE.Vector3(heartPoints[i].x, 0, heartPoints[i].y));
-				}
-
-				var lathe = new THREE.LatheGeometry( pts, opts.numSides),	
-					latheMaterial = new THREE.MeshBasicMaterial( { color: opts.meshColor, wireframe: true, transparent: true });
-
-				mesh = new THREE.Mesh( lathe, latheMaterial);
-
-				// mesh.position.y = 0;
-				mesh.overdraw = true;
-				mesh.doubleSided = true;
-
-				group.add( mesh );
-				//////////////
+				var shapePoints = createShape();
+				addShape(shapePoints);
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setSize( window.innerWidth, window.innerHeight );
@@ -81,8 +48,60 @@
 		}
 
 		/**
+		 * Returns a set of points for a shape
+		 */
+		function createShape() {
+			var shape = new THREE.Shape();
+
+			shape.moveTo( 0, 100 );
+			shape.arc(0, 0, 25, 1.57079633, 4.71238898, false);
+			shape.moveTo( 0, 85 );
+			shape.lineTo( -35, 70 );
+			shape.lineTo( -15, 60 );
+			shape.lineTo( -15, 0 );
+			shape.quadraticCurveTo( -30, -10, -10, -10);
+			shape.quadraticCurveTo( -40, 0, -40, -20);
+			shape.quadraticCurveTo( -50, -20, -45, -30);
+
+			shape.lineTo( 0, -30 );
+			shape.moveTo( 0, -30 );
+
+			var shapePoints = shape.extractPoints().shape,
+				points = [];
+
+			for(var i=0; i<shapePoints.length; i++) {
+				points.push(new THREE.Vector3(shapePoints[i].x, 0, shapePoints[i].y));
+			}
+
+			return points;
+		}
+
+		/**
+		 * Adds a shape to the view and then lathes it
+		 */
+		function addShape(points) {
+			var lathe = new THREE.LatheGeometry( points, opts.numSides),	
+				latheMaterial = new THREE.MeshBasicMaterial( { color: opts.meshColor, wireframe: true, transparent: true });
+
+			clearShape();
+
+			mesh = new THREE.Mesh(lathe, latheMaterial);
+			mesh.overdraw = true;
+			mesh.doubleSided = true;
+
+			group.add( mesh );
+		}
+
+		/**
+		 * Clears out current shape
+		 */
+		function clearShape() {
+			group.remove(mesh);
+		}
+
+		/**
 		 * Initialize camera
-		 */ 
+		 */
 		function setupCamera() {
 			camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 1000 );
 			camera.position.set( 0, 0, 500 );
@@ -90,7 +109,7 @@
 
 		/**
 		 * Ensure everything fits in the camera properly when the window is resized
-		 */ 
+		 */
 		function onWindowResize() {
 			windowHalfX = window.innerWidth / 2;
 			windowHalfY = window.innerHeight / 2;
@@ -189,7 +208,8 @@
 		init();
 
 		return {
-			save: save
+			save: save,
+			addShape: addShape
 		};
 	};
 })();
