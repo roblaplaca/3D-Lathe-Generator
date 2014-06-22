@@ -14,7 +14,9 @@
 			body {
 				height: 100%;
 				background: #efefef;
+				font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
 			}
+
 			.module-lathe-tool, .module-lathe-output {
 				margin: auto;
 				border: 1px solid #ccc;
@@ -23,12 +25,8 @@
 				width: 800px;
 
 				overflow: hidden;
-
+				display: inline-block;
 				box-shadow: 0 0 15px #ccc;
-				position: relative;
-				/*top: 50%;
-				transform: translateY(-50%);
-				-webkit-transform: translateY(-50%);*/
 			}
 			.module-lathe-tool canvas {
 				transition: all 600ms cubic-bezier(0,0,.25,1);
@@ -49,21 +47,62 @@
 				background: url("/assets/img/grid.png");
 			}
 
+			.main {
+				float: left;
+			}
 			.module-lathe-output {
 				margin-top: 10px;
 			}
 			.module-lathe-output canvas {
 				background: none;
 			}
+
+			.wrapper {
+				width: 1220px;
+				margin: auto;
+
+				position: relative;
+				top: 10%;
+			}
+			.sidebar {
+				float: left;
+				width: 300px;
+				display: inline-block;
+				margin-left: 20px;
+			}
+			.module-lathe-output {
+				margin-top: 0;
+				height: 300px;
+				width: 300px;
+			}
+
 		</style>
 	</head>
 	<body>
-		<div class="module module-lathe-tool" >
-			<!-- Container for module -->
-		</div>
+		
+		<div class="wrapper">
+			<div class="main">
+				<div class="module module-lathe-tool" >
+					<!-- Container for module -->
+				</div>
+			</div>
 
-		<div class="module module-lathe-output" data-name="lathe-tool">
+			<div class="sidebar">
+				<div class="module module-lathe-output" data-name="lathe-tool">
 
+				</div>
+
+				<ul>
+					<li>
+						<button class="download">Download STL</button>
+					</li>
+					<li>
+						<button class="reset">Reset</button>
+					</li>
+				</ul>
+
+				<input type="range" name="numSides" class="numSides" min="3" max="32" />
+			</div>
 		</div>
 
 		<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
@@ -80,76 +119,47 @@
 
 		<script>
 			$(function() {
+				var $slider = $(".numSides");
+
+
 
 				var workarea = new LatheWorkArea({
 					instance: $(".module-lathe-tool")
 				});
 
 				window.lathe = new Lathe({
-					instance: $(".module-lathe-output").eq(0)
+					instance: $(".module-lathe-output").eq(0),
+					height: 300,
+					width: 300
 				});
 
 				var penTool = new PenTool({
 					instance: workarea.getDrawingCanvas(),
 					onPathClosed: function() {
-						var shapePoints = convertPathToShape(penTool.getPath());
-							
-						var jsonShape = convertJSONToShape(penTool.exportJSON());
-						
+						console.log(penTool.getPath());
+						var path = penTool.getPath();
 
-						lathe.addShape(shapePoints, 20);
+						if( path !== null && path.closed ) {
+							var shapePoints = convertPathToShape(path);
+							lathe.addShape(shapePoints, $slider.val());	
+						} else {
+							lathe.addShape([], 0);
+						}
+						
 					}
 				});
 				
+				$slider.on("change", function() {
+					penTool.updateSides();
+				});
 
-				function convertJSONToShape(paperJsonPath) {
-					var shape = new THREE.Shape(),
-						shapePoints = [],
-						adjustedPoints = [];
+				$(".download").on("click", function(e) {
+					lathe.save();
+				});
 
-						console.log($.parseJSON(paperJsonPath));
-
-					var segments = $.parseJSON(paperJsonPath)[0][1].children[0][1].segments;
-
-					var currentSegment = segments[0];
-
-					shape.moveTo(currentSegment[0], currentSegment[1]);
-
-					for( var i=1; i<segments.length; i++) {
-						currentSegment = segments[i];
-						if( currentSegment.length === 2 ) {
-							shape.lineTo(currentSegment[0], currentSegment[1]);	
-						} else {
-							console.log(currentSegment);
-							shape.bezierCurveTo(
-								currentSegment[1][0], currentSegment[1][1],
-								currentSegment[2][0], currentSegment[1][1],
-								currentSegment[0][0], currentSegment[1][1]
-							);	
-						}
-						
-					}										
-					// shape.moveTo(paperJSPath.firstSegment.point.x, paperJSPath.firstSegment.point.y);
-
-					// for( var i=1; i<paperJSPath.segments.length; i++) {
-					// 	shape.lineTo(paperJSPath.segments[i].point.x, paperJSPath.segments[i].point.y);
-					// }
-
-					// shape.lineTo(paperJSPath.firstSegment.point.x, paperJSPath.firstSegment.point.y);
-					// shape.moveTo(paperJSPath.firstSegment.point.x, paperJSPath.firstSegment.point.y);
-					currentSegment = segments[0];
-					shape.lineTo(currentSegment[0], currentSegment[1]);
-					shape.lineTo(currentSegment[0], currentSegment[1]);
-					// shape.moveTo(segments[0][0], segments[0][1]);
-
-					shapePoints = shape.extractPoints().shape;
-
-					for( var k=0; k<shapePoints.length; k++ ) {
-						adjustedPoints.push( new THREE.Vector3(shapePoints[k].x, 0, -shapePoints[k].y) );
-					}
-
-					return adjustedPoints;
-				}		
+				$(".reset").on("click", function(e) {
+					penTool.reset();
+				});
 
 				function convertPathToShape(paperJSPath) {
 					var shape = new THREE.Shape(),
@@ -172,13 +182,7 @@
 					}
 
 					return adjustedPoints;
-				}		
-
-				// Send shape points to the lathe for rendering
-				// var shapePoints = createPawnShape();
-				// lathe.addShape(shapePoints, 16);
-				// .module-lathe-output
-				// console.log( penTool.getPath() );
+				}
 			});
 
 		</script>

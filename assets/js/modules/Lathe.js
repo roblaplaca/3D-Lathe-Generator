@@ -2,7 +2,9 @@
 	window.Lathe = function(params) {
 		var opts = $.extend({
 				numSides: 4,
-				meshColor: 0x00aedb
+				meshColor: 0x00cc00,
+				height: 600,
+				width: 800
 			}, params),
 			$module = opts.instance || null,
 			camera, scene, renderer,
@@ -15,8 +17,8 @@
 			mouseXOnMouseDown = 0,
 			mouseY = 0,
 			mouseYOnMouseDown = 0,
-			windowHalfX = 800 / 2,
-			windowHalfY = 600 / 2;
+			windowHalfX = opts.width / 2,
+			windowHalfY = opts.height / 2;
 
 		function init() {
 			if( $module !== null ) {
@@ -31,7 +33,7 @@
 				scene.add( group );
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.setSize( 800, 600 );
+				renderer.setSize( opts.width, opts.height );
 
 				$module.append( renderer.domElement );
 				$module.get(0).addEventListener('mousedown', onDocumentMouseDown, false );
@@ -72,7 +74,7 @@
 		 * Initialize camera
 		 */
 		function setupCamera() {
-			camera = new THREE.PerspectiveCamera( 100, 800 / 600, 1, 1000 );
+			camera = new THREE.PerspectiveCamera( 100, opts.width / opts.height, 1, 1000 );
 			camera.position.set( 0, 0, 500 );
 		}
 

@@ -76,7 +76,8 @@
 
 			if (!path) {
 				path = new drawingAreaScope.Path();
-				// path.strokeColor = strokeColor;
+				path.strokeColor = strokeColor;
+				//path.fillColor = "#eee";
 			}
 
 			var result = findHandle(event.point);
@@ -108,18 +109,6 @@
 			if (mode == 'move' && type == 'point') {
 				currentSegment.point = event.point;
 				opts.onPathClosed();
-			} else if (mode != 'close') {
-				return;
-				var delta = event.delta.clone();
-
-				if (type == 'handleOut' || mode == 'add') {
-					delta = delta.subtract(delta).subtract(delta);
-
-				}
-					
-				currentSegment.handleIn = currentSegment.handleIn.add(delta);
-				currentSegment.handleOut = currentSegment.handleOut.subtract(delta);
-				// opts.onPathClosed();
 			}
 		}
 
@@ -133,19 +122,23 @@
 		}
 
 		/**
-         * @returns {element} - canvas element
          * @public
          */
 
-		function exportJSON() {
-			return drawingAreaScope.project.exportJSON();
+		function reset() {
+			drawingAreaScope.setup(canvas);
+			path = null;
+			opts.onPathClosed();
 		}
 
 		init();
 
 		return {
 			getPath: getPath,
-			exportJSON: exportJSON
+			reset: reset,
+			updateSides: function() {
+				opts.onPathClosed();
+			}
 		};
 	};
 })();
