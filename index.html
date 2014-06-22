@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>3D Lathe Tool</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<style>
+			html {
+				margin: 0;
+				padding: 0;
+				height: 100%;
+			}
+			body {
+				height: 100%;
+				background: #efefef;
+			}
+			.module-lathe-tool {
+				margin: auto;
+				border: 1px solid #ccc;
+				background: #fff;
+				height: 600px;
+				width: 800px;
+
+				overflow: hidden;
+
+				box-shadow: 0 0 15px #ccc;
+				position: relative;
+				top: 50%;
+				transform: translateY(-50%);
+				-webkit-transform: translateY(-50%);
+			}
+			.module-lathe-tool canvas {
+				transition: all 600ms cubic-bezier(0,0,.25,1);
+				-webkit-transition: all 600ms cubic-bezier(0,0,.25,1);
+			}
+			.module-lathe-tool.model-mode canvas {
+				transform: translateY(100%);
+				-webkit-transform: translateY(100%);
+			}
+			.canvasLeft {
+				background: #fff;
+			}
+			.canvasRight {
+				cursor: crosshair;
+				background: url("/assets/img/paper-divider.png") repeat-y, url("/assets/img/grid.png");
+			}
+			canvas {
+				background: url("/assets/img/grid.png");
+			}
+		</style>
+	</head>
+	<body>
+		<div class="module module-lathe-tool" data-name="lathe-tool">
+			<!-- Container for module -->
+		</div>
+
+		<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+		<script src="/assets/js/libs/paper-full.js"></script>
+		<!-- <script src="/assets/js/modules/PenTool.js"></script> -->
+		<script>
+			$(function() {
+				var $latheToolInstance = $(".module-lathe-tool"),
+					latheToolHeight = $latheToolInstance.height(),
+					latheToolWidth = $latheToolInstance.width(),
+					latheToolWidthHalved = latheToolWidth / 2;
+
+				$latheToolInstance.append('<canvas class="canvasLeft" height="' + latheToolHeight + '" width="' + latheToolWidthHalved + '" />');
+				$latheToolInstance.append('<canvas class="canvasRight" height="' + latheToolHeight + '" width="' + latheToolWidthHalved + '" />');
+
+				window.paperLeft = new paper.PaperScope();
+				var paperRight = new paper.PaperScope();
+
+
+				// Get a reference to the canvas object
+				var canvasLeft = $latheToolInstance.find("canvas").get(0);
+				var canvasRight = $latheToolInstance.find("canvas").get(1);
+				
+				paperLeft.setup(canvasLeft);
+				paperRight.setup(canvasRight);
+
+
+				paper = paperRight;
+				var path = new paper.Path();
+				path.strokeColor = '#999';
+				
+
+				var start = new paper.Point(0, 100);
+				// Move to start and draw a line from there
+				path.moveTo(start);
+				// Note that the plus operator on Point objects does not work
+				// in JavaScript. Instead, we need to call the add() function:
+				path.lineTo(start.add([ 300, latheToolHeight / 2 ]));
+				path.lineTo(start.add([ 100, 400 ]));
+				path.lineTo(start.add([ 0, 150 ]));
+				path.closed = true;
+				
+				// Draw the view now:
+				paper.view.draw();
+
+
+				paper = paperLeft;
+				var path = new paper.Path();
+				path.strokeColor = '#999';
+
+				var start = new paper.Point(0, 100);
+				// Move to start and draw a line from there
+				path.moveTo(start);
+				// Note that the plus operator on Point objects does not work
+				// in JavaScript. Instead, we need to call the add() function:
+				path.lineTo(start.add([ 300, latheToolHeight / 2 ]));
+				path.lineTo(start.add([ 100, 400 ]));
+				path.lineTo(start.add([ 0, 150 ]));
+				path.closed = true;
+				path.scale(-1, 1);
+				path.translate(100, 0);
+
+				// Draw the view now:
+				paper.view.draw();
+
+				// var penTool = new PenTool({
+				// 	instance: $(".module-lathe-tool")
+				// });
+
+
+				
+			});
+
+		</script>
+	</body>
+</html>
