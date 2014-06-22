@@ -108,6 +108,18 @@
 			if (mode == 'move' && type == 'point') {
 				currentSegment.point = event.point;
 				opts.onPathClosed();
+			} else if (mode != 'close') {
+				return;
+				var delta = event.delta.clone();
+
+				if (type == 'handleOut' || mode == 'add') {
+					delta = delta.subtract(delta).subtract(delta);
+
+				}
+					
+				currentSegment.handleIn = currentSegment.handleIn.add(delta);
+				currentSegment.handleOut = currentSegment.handleOut.subtract(delta);
+				// opts.onPathClosed();
 			}
 		}
 
@@ -120,10 +132,20 @@
 			return path;
 		}
 
+		/**
+         * @returns {element} - canvas element
+         * @public
+         */
+
+		function exportJSON() {
+			return drawingAreaScope.project.exportJSON();
+		}
+
 		init();
 
 		return {
-			getPath: getPath
+			getPath: getPath,
+			exportJSON: exportJSON
 		};
 	};
 })();

@@ -52,6 +52,9 @@
 			.module-lathe-output {
 				margin-top: 10px;
 			}
+			.module-lathe-output canvas {
+				background: none;
+			}
 		</style>
 	</head>
 	<body>
@@ -90,10 +93,63 @@
 					instance: workarea.getDrawingCanvas(),
 					onPathClosed: function() {
 						var shapePoints = convertPathToShape(penTool.getPath());
-						lathe.addShape(shapePoints, 16);
+							
+						var jsonShape = convertJSONToShape(penTool.exportJSON());
+						
+
+						lathe.addShape(shapePoints, 20);
 					}
 				});
 				
+
+				function convertJSONToShape(paperJsonPath) {
+					var shape = new THREE.Shape(),
+						shapePoints = [],
+						adjustedPoints = [];
+
+						console.log($.parseJSON(paperJsonPath));
+
+					var segments = $.parseJSON(paperJsonPath)[0][1].children[0][1].segments;
+
+					var currentSegment = segments[0];
+
+					shape.moveTo(currentSegment[0], currentSegment[1]);
+
+					for( var i=1; i<segments.length; i++) {
+						currentSegment = segments[i];
+						if( currentSegment.length === 2 ) {
+							shape.lineTo(currentSegment[0], currentSegment[1]);	
+						} else {
+							console.log(currentSegment);
+							shape.bezierCurveTo(
+								currentSegment[1][0], currentSegment[1][1],
+								currentSegment[2][0], currentSegment[1][1],
+								currentSegment[0][0], currentSegment[1][1]
+							);	
+						}
+						
+					}										
+					// shape.moveTo(paperJSPath.firstSegment.point.x, paperJSPath.firstSegment.point.y);
+
+					// for( var i=1; i<paperJSPath.segments.length; i++) {
+					// 	shape.lineTo(paperJSPath.segments[i].point.x, paperJSPath.segments[i].point.y);
+					// }
+
+					// shape.lineTo(paperJSPath.firstSegment.point.x, paperJSPath.firstSegment.point.y);
+					// shape.moveTo(paperJSPath.firstSegment.point.x, paperJSPath.firstSegment.point.y);
+					currentSegment = segments[0];
+					shape.lineTo(currentSegment[0], currentSegment[1]);
+					shape.lineTo(currentSegment[0], currentSegment[1]);
+					// shape.moveTo(segments[0][0], segments[0][1]);
+
+					shapePoints = shape.extractPoints().shape;
+
+					for( var k=0; k<shapePoints.length; k++ ) {
+						adjustedPoints.push( new THREE.Vector3(shapePoints[k].x, 0, -shapePoints[k].y) );
+					}
+
+					return adjustedPoints;
+				}		
 
 				function convertPathToShape(paperJSPath) {
 					var shape = new THREE.Shape(),
@@ -101,14 +157,10 @@
 						adjustedPoints = [];
 
 					shape.moveTo(paperJSPath.firstSegment.point.x, paperJSPath.firstSegment.point.y);
-					console.log("moveTo: ", paperJSPath.firstSegment.point.x, paperJSPath.firstSegment.point.y);
 
 					for( var i=1; i<paperJSPath.segments.length; i++) {
 						shape.lineTo(paperJSPath.segments[i].point.x, paperJSPath.segments[i].point.y);
-						console.log("lineTo: ", paperJSPath.segments[i].point.x, paperJSPath.segments[i].point.y);
 					}
-
-					console.log("lineTo: ", paperJSPath.firstSegment.point.x, paperJSPath.firstSegment.point.y);
 
 					shape.lineTo(paperJSPath.firstSegment.point.x, paperJSPath.firstSegment.point.y);
 					shape.moveTo(paperJSPath.firstSegment.point.x, paperJSPath.firstSegment.point.y);
