@@ -38,10 +38,10 @@
 				transform: translateY(100%);
 				-webkit-transform: translateY(100%);
 			}
-			.canvasLeft {
+			.mirror {
 				background: #fff;
 			}
-			.canvasRight {
+			.drawingArea {
 				cursor: crosshair;
 				background: url("/assets/img/paper-divider.png") repeat-y, url("/assets/img/grid.png");
 			}
@@ -57,73 +57,20 @@
 
 		<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 		<script src="/assets/js/libs/paper-full.js"></script>
-		<!-- <script src="/assets/js/modules/PenTool.js"></script> -->
+		<script src="/assets/js/modules/LatheWorkArea.js"></script>
+		<script src="/assets/js/modules/PenTool.js"></script>
 		<script>
 			$(function() {
-				var $latheToolInstance = $(".module-lathe-tool"),
-					latheToolHeight = $latheToolInstance.height(),
-					latheToolWidth = $latheToolInstance.width(),
-					latheToolWidthHalved = latheToolWidth / 2;
 
-				$latheToolInstance.append('<canvas class="canvasLeft" height="' + latheToolHeight + '" width="' + latheToolWidthHalved + '" />');
-				$latheToolInstance.append('<canvas class="canvasRight" height="' + latheToolHeight + '" width="' + latheToolWidthHalved + '" />');
+				var latheTool = new LatheWorkArea({
+					instance: $(".module-lathe-tool")
+				});
 
-				window.paperLeft = new paper.PaperScope();
-				var paperRight = new paper.PaperScope();
+				var penTool = new PenTool({
+					instance: latheTool.getDrawingCanvas()
+				});
 
-
-				// Get a reference to the canvas object
-				var canvasLeft = $latheToolInstance.find("canvas").get(0);
-				var canvasRight = $latheToolInstance.find("canvas").get(1);
-				
-				paperLeft.setup(canvasLeft);
-				paperRight.setup(canvasRight);
-
-
-				paper = paperRight;
-				var path = new paper.Path();
-				path.strokeColor = '#999';
-				
-
-				var start = new paper.Point(0, 100);
-				// Move to start and draw a line from there
-				path.moveTo(start);
-				// Note that the plus operator on Point objects does not work
-				// in JavaScript. Instead, we need to call the add() function:
-				path.lineTo(start.add([ 300, latheToolHeight / 2 ]));
-				path.lineTo(start.add([ 100, 400 ]));
-				path.lineTo(start.add([ 0, 150 ]));
-				path.closed = true;
-				
-				// Draw the view now:
-				paper.view.draw();
-
-
-				paper = paperLeft;
-				var path = new paper.Path();
-				path.strokeColor = '#999';
-
-				var start = new paper.Point(0, 100);
-				// Move to start and draw a line from there
-				path.moveTo(start);
-				// Note that the plus operator on Point objects does not work
-				// in JavaScript. Instead, we need to call the add() function:
-				path.lineTo(start.add([ 300, latheToolHeight / 2 ]));
-				path.lineTo(start.add([ 100, 400 ]));
-				path.lineTo(start.add([ 0, 150 ]));
-				path.closed = true;
-				path.scale(-1, 1);
-				path.translate(100, 0);
-
-				// Draw the view now:
-				paper.view.draw();
-
-				// var penTool = new PenTool({
-				// 	instance: $(".module-lathe-tool")
-				// });
-
-
-				
+				// console.log( penTool.getPath() );
 			});
 
 		</script>
