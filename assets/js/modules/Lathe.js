@@ -15,8 +15,8 @@
 			mouseXOnMouseDown = 0,
 			mouseY = 0,
 			mouseYOnMouseDown = 0,
-			windowHalfX = window.innerWidth / 2,
-			windowHalfY = window.innerHeight / 2;
+			windowHalfX = 800 / 2,
+			windowHalfY = 600 / 2;
 
 		function init() {
 			if( $module !== null ) {
@@ -31,12 +31,10 @@
 				scene.add( group );
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setSize( 800, 600 );
 
 				$module.append( renderer.domElement );
-
-				document.addEventListener('mousedown', onDocumentMouseDown, false );
-				window.addEventListener('resize', onWindowResize, false );
+				$module.get(0).addEventListener('mousedown', onDocumentMouseDown, false );
 
 				animate();
 			} else {
@@ -52,7 +50,7 @@
 		function addShape(points, definition) {
 			var definition = definition || opts.numSides,
 				lathe = new THREE.LatheGeometry( points, definition ),	
-				latheMaterial = new THREE.MeshBasicMaterial( { color: opts.meshColor, wireframe: true, transparent: true });
+				latheMaterial = new THREE.MeshBasicMaterial( { color: opts.meshColor, shading: THREE.FlatShading, wireframe: true, transparent: true });
 
 			clearShape();
 
@@ -74,21 +72,8 @@
 		 * Initialize camera
 		 */
 		function setupCamera() {
-			camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 1000 );
+			camera = new THREE.PerspectiveCamera( 100, 800 / 600, 1, 1000 );
 			camera.position.set( 0, 0, 500 );
-		}
-
-		/**
-		 * Ensure everything fits in the camera properly when the window is resized
-		 */
-		function onWindowResize() {
-			windowHalfX = window.innerWidth / 2;
-			windowHalfY = window.innerHeight / 2;
-
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
-
-			renderer.setSize( window.innerWidth, window.innerHeight );
 		}
 
 		/**
@@ -98,9 +83,9 @@
 		function onDocumentMouseDown( e ) {
 			e.preventDefault();
 
-			document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-			document.addEventListener( 'mouseup', onDocumentMouseUp, false );
-			document.addEventListener( 'mouseout', onDocumentMouseOut, false );
+			$module.get(0).addEventListener( 'mousemove', onDocumentMouseMove, false );
+			$module.get(0).addEventListener( 'mouseup', onDocumentMouseUp, false );
+			$module.get(0).addEventListener( 'mouseout', onDocumentMouseOut, false );
 
 			mouseXOnMouseDown = e.clientX - windowHalfX;
 			targetRotationOnMouseDown = targetRotation;
@@ -121,9 +106,9 @@
 		 * Leave inspection mode, and reset model to the default position
 		 */
 		function onDocumentMouseUp( e ) {
-			document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
-			document.removeEventListener( 'mouseup', onDocumentMouseUp, false );
-			document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
+			$module.get(0).removeEventListener( 'mousemove', onDocumentMouseMove, false );
+			$module.get(0).removeEventListener( 'mouseup', onDocumentMouseUp, false );
+			$module.get(0).removeEventListener( 'mouseout', onDocumentMouseOut, false );
 
 			resetModelPosition();
 		}
@@ -132,9 +117,9 @@
 		 * Leave inspection mode, and reset model to the default position
 		 */
 		function onDocumentMouseOut( e ) {
-			document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
-			document.removeEventListener( 'mouseup', onDocumentMouseUp, false );
-			document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
+			$module.get(0).removeEventListener( 'mousemove', onDocumentMouseMove, false );
+			$module.get(0).removeEventListener( 'mouseup', onDocumentMouseUp, false );
+			$module.get(0).removeEventListener( 'mouseout', onDocumentMouseOut, false );
 
 			resetModelPosition();
 		}
@@ -169,11 +154,12 @@
 		 * to generate a downloadable STL
 		 */
 		function save() {
-			var geometry = mesh.geometry,
-				stlString = generateSTL( geometry ),
-				blob = new Blob([stlString], { type: "text/plain" });
+			var geometry = mesh.geometry;
 
-			saveAs(blob, prompt("Name the model") + '.stl');
+			stlString = stlFromGeometry( geometry ),
+			blob = new Blob([stlString], { type: "text/plain" });
+
+			saveAs(blob, prompt("Name the model") + '.stl');			
 		}
 
 		init();
