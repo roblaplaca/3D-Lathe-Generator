@@ -23,7 +23,6 @@
 				background: #fff;
 				height: 600px;
 				width: 800px;
-
 				overflow: hidden;
 				display: inline-block;
 				box-shadow: 0 0 15px #ccc;
@@ -56,13 +55,12 @@
 			.module-lathe-output canvas {
 				background: none;
 			}
-
 			.wrapper {
 				width: 1220px;
 				margin: auto;
 
 				position: relative;
-				top: 10%;
+				
 			}
 			.sidebar {
 				float: left;
@@ -75,12 +73,74 @@
 				height: 300px;
 				width: 300px;
 			}
+			button {
+				cursor: pointer;
+				padding: 6px 20px;
+				background: #000;
+				border: 4px solid #000;
+				color: #fff;
+			}
+			button:disabled {
+				background: #ccc;
+				border-color: #ccc;
+				color: #fff;
+				cursor: default;
+			}
+			button:disabled:hover {
+				border-color: #ccc;
+			}
+			button:hover, button:focus {
+				border-color: #333;
+			}
+			.reset {
+				border: 4px solid #c00;
+				background: #c00;
+			}
+			.reset:hover, .reset:focus {
+				border-color: red;
+			}
+			.sidebar ul {
+				margin: 10px 0;
+				padding: 0;
+				list-style: none;
+			}
+			.sidebar li {
+				display: inline-block;
+			}
+			header h1, header p {
+				margin: 0;
+			}
+			header p {
+				color: #999;
+			}
+			header {
+				margin: 20px 0;
+			}
+			.segment-slider {
+				font-size: 12px;
+				padding-top: 10px;
+				padding-bottom: 20px;
+				margin-bottom: 25px;
+				border-bottom: 1px solid #ccc;
+			}
+			.segment-slider input {
+				position: relative;
+				top: 6px;
+				width: 100%;
+				margin: 0;
+			}
 
 		</style>
 	</head>
 	<body>
 		
 		<div class="wrapper">
+			
+			<header>
+				<h1>3D Lathe Generator</h1>
+				<p>Draw a shape on the graph paper to generate a 3D object</p>
+			</header>
+
 			<div class="main">
 				<div class="module module-lathe-tool" >
 					<!-- Container for module -->
@@ -92,16 +152,21 @@
 
 				</div>
 
+				<div class="segment-slider">
+					<label for="num-segments">
+						Num segments (<span class="segment-count">0</span>): <br />
+						<input type="range" id="num-segments" name="numSides" class="num-segments" min="3" max="32" value="16" />
+					</label>
+				</div>
+
 				<ul>
 					<li>
-						<button class="download">Download STL</button>
+						<button class="download" disabled="disabled">Download STL</button>
 					</li>
 					<li>
 						<button class="reset">Reset</button>
 					</li>
 				</ul>
-
-				<input type="range" name="numSides" class="numSides" min="3" max="32" />
 			</div>
 		</div>
 
@@ -109,8 +174,8 @@
 		<script src="/assets/js/libs/paper-full.js"></script>
 		<script src="/assets/js/modules/LatheWorkArea.js"></script>
 		<script src="/assets/js/modules/PenTool.js"></script>
+		<script src="/assets/js/modules/Mirror.js"></script>
 
-		
 		<script src="assets/js/libs/FileSaver.js"></script>
 		<script src="assets/js/libs/THREE2STL.js"></script>
 		<script src="assets/js/libs/Three.js"></script>
@@ -119,37 +184,44 @@
 
 		<script>
 			$(function() {
-				var $slider = $(".numSides");
+				var $slider = $(".num-segments");
 
-
+				$(".segment-count").text($slider.val());
 
 				var workarea = new LatheWorkArea({
 					instance: $(".module-lathe-tool")
 				});
 
-				window.lathe = new Lathe({
+				var lathe = new Lathe({
 					instance: $(".module-lathe-output").eq(0),
 					height: 300,
 					width: 300
 				});
 
+				var mirror = new Mirror({
+					instance: workarea.getMirrorCanvas()
+				});
+
 				var penTool = new PenTool({
 					instance: workarea.getDrawingCanvas(),
 					onPathClosed: function() {
-						console.log(penTool.getPath());
 						var path = penTool.getPath();
 
-						if( path !== null && path.closed ) {
+						if( path !== null && typeof path !== "undefined") {
 							var shapePoints = convertPathToShape(path);
 							lathe.addShape(shapePoints, $slider.val());	
+							mirror.update(path);
+							$(".download").prop('disabled', false);
 						} else {
 							lathe.addShape([], 0);
+							mirror.clear();
+							$(".download").prop('disabled', true);
 						}
-						
 					}
 				});
 				
-				$slider.on("change", function() {
+				$slider.on("input", function(e) {
+					$(".segment-count").text($(e.target).val());
 					penTool.updateSides();
 				});
 
@@ -158,6 +230,7 @@
 				});
 
 				$(".reset").on("click", function(e) {
+					$(".download").prop('disabled', true);
 					penTool.reset();
 				});
 

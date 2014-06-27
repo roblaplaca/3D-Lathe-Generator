@@ -99,6 +99,10 @@
 			if (!currentSegment && !path.closed)
 				currentSegment = path.add(event.point);
 			currentSegment.selected = true;
+
+
+
+			opts.onPathClosed();
 		}
 
 		/**

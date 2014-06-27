@@ -29,6 +29,16 @@
 
 				resetModelPosition();
 
+				// var ambient = new THREE.AmbientLight( 0xffffff );
+				// scene.add( ambient );
+
+				pointLight = new THREE.PointLight( 0xffffff, 3, 0);
+				pointLight.position.set(-40, 0, 20);
+				scene.add( pointLight );
+
+				// directionalLight = new THREE.DirectionalLight( 0xffffff, 3 );
+				// scene.add( directionalLight );
+
 				group.rotation.x = -(Math.PI / 2);
 				scene.add( group );
 
@@ -52,14 +62,16 @@
 		function addShape(points, definition) {
 			var definition = definition || opts.numSides,
 				lathe = new THREE.LatheGeometry( points, definition ),	
-				latheMaterial = new THREE.MeshBasicMaterial( { color: opts.meshColor, shading: THREE.FlatShading, wireframe: true, transparent: true });
+				latheMaterial = new THREE.MeshBasicMaterial({
+					color: opts.meshColor,
+					shading: THREE.FlatShading,
+					wireframe: true,
+					transparent: true 
+				});
 
 			clearShape();
 
-			mesh = new THREE.Mesh(lathe, latheMaterial);
-			mesh.overdraw = true;
-			mesh.doubleSided = true;
-
+			mesh = new THREE.Mesh( lathe, latheMaterial );
 			group.add( mesh );
 		}
 
@@ -74,8 +86,10 @@
 		 * Initialize camera
 		 */
 		function setupCamera() {
-			camera = new THREE.PerspectiveCamera( 100, opts.width / opts.height, 1, 1000 );
-			camera.position.set( 0, 0, 500 );
+			camera = new THREE.PerspectiveCamera( 75, opts.width / opts.height, 1, 5000 );
+			// camera.position.set( 0, 0, 500 );
+			camera.position.z = 1000;
+			camera.position.y = -250;
 		}
 
 		/**
