@@ -70,14 +70,14 @@
          */
 
 		function onMouseDown(event) {
-			if (currentSegment)
+			if (currentSegment) {
 				currentSegment.selected = false;
-			mode = type = currentSegment = null;
-
+				mode = type = currentSegment = null;
+			}
+				
 			if (!path) {
 				path = new drawingAreaScope.Path();
 				path.strokeColor = strokeColor;
-				//path.fillColor = "#eee";
 			}
 
 			var result = findHandle(event.point);
@@ -89,18 +89,15 @@
 					mode = 'close';
 					path.closed = true;
 					opts.onPathClosed();
-					// path.selected = false;
-					// path = null;
 				}
 			}
 			
 			mode = currentSegment ? 'move' : 'add';
 
-			if (!currentSegment && !path.closed)
+			if (!currentSegment && !path.closed) {
 				currentSegment = path.add(event.point);
-			currentSegment.selected = true;
-
-
+				currentSegment.selected = true;
+			}
 
 			opts.onPathClosed();
 		}
@@ -135,14 +132,20 @@
 			opts.onPathClosed();
 		}
 
+		/**
+         * @public
+         */
+
+		function updateSides() {
+			opts.onPathClosed();
+		}
+
 		init();
 
 		return {
 			getPath: getPath,
 			reset: reset,
-			updateSides: function() {
-				opts.onPathClosed();
-			}
+			updateSides: updateSides
 		};
 	};
 })();

@@ -1,0 +1,121 @@
+html {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+body {
+	height: 100%;
+	background: #efefef;
+	font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
+}
+.module-lathe-tool, .module-lathe-output {
+	margin: auto;
+	border: 1px solid #ccc;
+	background: #fff;
+	height: 600px;
+	width: 800px;
+	overflow: hidden;
+	display: inline-block;
+	box-shadow: 0 0 15px #ccc;
+}
+.module-lathe-tool canvas {
+	transition: all 600ms cubic-bezier(0,0,.25,1);
+	-webkit-transition: all 600ms cubic-bezier(0,0,.25,1);
+}
+.module-lathe-tool.model-mode canvas {
+	transform: translateY(100%);
+	-webkit-transform: translateY(100%);
+}
+.mirror {
+	background: #fff;
+}
+.drawingArea {
+	cursor: crosshair;
+	background: url("/assets/img/paper-divider.png") repeat-y, url("/assets/img/grid.png");
+}
+canvas {
+	background: url("/assets/img/grid.png");
+}
+.main {
+	float: left;
+}
+.module-lathe-output {
+	margin-top: 10px;
+}
+.module-lathe-output canvas {
+	background: none;
+}
+.wrapper {
+	width: 1220px;
+	margin: auto;
+	position: relative;
+}
+.sidebar {
+	float: left;
+	width: 300px;
+	display: inline-block;
+	margin-left: 20px;
+}
+.module-lathe-output {
+	margin-top: 0;
+	height: 300px;
+	width: 300px;
+}
+button {
+	cursor: pointer;
+	padding: 6px 10px;
+	border: 2px solid #000;
+	color: #000;
+}
+button:disabled {
+	background: none;
+	border-color: #ccc;
+	color: #ccc;
+	cursor: default;
+}
+button:disabled:hover {
+	border-color: #ccc;
+	color: #ccc;
+}
+button:hover, button:focus {
+	border-color: #666;
+	color: #666;
+}
+.reset {
+	border: 2px solid #c00;
+	color: #c00;
+}
+.reset:hover, .reset:focus {
+	border-color: red;
+	color: red;
+}
+.sidebar ul {
+	margin: 10px 0;
+	padding: 0;
+	list-style: none;
+}
+.sidebar li {
+	display: inline-block;
+}
+header h1, header p {
+	margin: 0;
+}
+header p {
+	color: #999;
+}
+header {
+	margin: 20px 0;
+}
+.segment-slider {
+	font-size: 12px;
+	padding-top: 10px;
+	padding-bottom: 20px;
+	margin-bottom: 25px;
+	border-bottom: 1px solid #ccc;
+}
+.segment-slider input {
+	position: relative;
+	top: 6px;
+	width: 100%;
+	margin: 0;
+}

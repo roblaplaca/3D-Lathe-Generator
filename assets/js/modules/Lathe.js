@@ -1,4 +1,8 @@
 (function() {
+	// TODO: rename Lathe to something that makes more sense
+	// TODO: add comments about Lathe class
+	// TODO: add JS-doc syntax for all of Lathe.js methods
+	// TODO: come up with way to create a partial rotation
 	window.Lathe = function(params) {
 		var opts = $.extend({
 				numSides: 4,
@@ -20,6 +24,10 @@
 			windowHalfX = opts.width / 2,
 			windowHalfY = opts.height / 2;
 
+		/**
+         * @constructor
+         */
+
 		function init() {
 			if( $module !== null ) {
 				setupCamera();
@@ -29,15 +37,10 @@
 
 				resetModelPosition();
 
-				// var ambient = new THREE.AmbientLight( 0xffffff );
-				// scene.add( ambient );
-
+				// TODO: figure out good lighting type for Lathe.js
 				pointLight = new THREE.PointLight( 0xffffff, 3, 0);
 				pointLight.position.set(-40, 0, 20);
 				scene.add( pointLight );
-
-				// directionalLight = new THREE.DirectionalLight( 0xffffff, 3 );
-				// scene.add( directionalLight );
 
 				group.rotation.x = -(Math.PI / 2);
 				scene.add( group );
@@ -59,6 +62,7 @@
 		 * addShape(points) - renders shape with default definition
 		 * addShape(points, definition) - renders shape with custom definition, however doesn't reset default
 		 */
+
 		function addShape(points, definition) {
 			var definition = definition || opts.numSides,
 				lathe = new THREE.LatheGeometry( points, definition ),	
@@ -71,6 +75,7 @@
 
 			clearShape();
 
+			// TODO: make sure lathe shape has a mesh that reflects light so that it can be exported effectively
 			mesh = new THREE.Mesh( lathe, latheMaterial );
 			group.add( mesh );
 		}
@@ -78,6 +83,7 @@
 		/**
 		 * Clears out current shape
 		 */
+
 		function clearShape() {
 			group.remove(mesh);
 		}
@@ -85,6 +91,7 @@
 		/**
 		 * Initialize camera
 		 */
+
 		function setupCamera() {
 			camera = new THREE.PerspectiveCamera( 75, opts.width / opts.height, 1, 5000 );
 			// camera.position.set( 0, 0, 500 );
@@ -95,7 +102,10 @@
 		/**
 		 * When the mouse is down enter inspection mode, allowing the user
 		 * to rotate the group on the x/y axis
+		 *
+		 * TODO: redo mouse interactions to be more usable
 		 */
+
 		function onDocumentMouseDown( e ) {
 			e.preventDefault();
 
@@ -110,6 +120,7 @@
 		/**
 		 * Once in inspection mode, moving the mouse updates the x/y axis position of the group
 		 */
+
 		function onDocumentMouseMove( e ) {
 			mouseX = e.clientX - windowHalfX;
 			mouseY = e.clientY - windowHalfY;
@@ -121,7 +132,9 @@
 		/**
 		 * Leave inspection mode, and reset model to the default position
 		 */
-		function onDocumentMouseUp( e ) {
+
+		function onDocumentMouseUp(e) {
+			// TODO: don't use $module.get(0) for events
 			$module.get(0).removeEventListener( 'mousemove', onDocumentMouseMove, false );
 			$module.get(0).removeEventListener( 'mouseup', onDocumentMouseUp, false );
 			$module.get(0).removeEventListener( 'mouseout', onDocumentMouseOut, false );
@@ -132,7 +145,9 @@
 		/**
 		 * Leave inspection mode, and reset model to the default position
 		 */
-		function onDocumentMouseOut( e ) {
+
+		function onDocumentMouseOut(e) {
+			// TODO: don't use $module.get(0) for events
 			$module.get(0).removeEventListener( 'mousemove', onDocumentMouseMove, false );
 			$module.get(0).removeEventListener( 'mouseup', onDocumentMouseUp, false );
 			$module.get(0).removeEventListener( 'mouseout', onDocumentMouseOut, false );
@@ -143,6 +158,7 @@
 		/**
 		 * Resets model to default position
 		 */
+
 		function resetModelPosition() {
 			targetRotation = 0;
 			targetYRotation =  -(Math.PI / 2);
@@ -151,6 +167,7 @@
 		/**
 		 * Kick off the animation loop
 		 */
+
 		function animate() {
 			requestAnimationFrame( animate );
 			render();
@@ -159,6 +176,7 @@
 		/**
 		 * Render loop for displaying the model
 		 */
+
 		function render() {
 			group.rotation.y += ( targetRotation - group.rotation.y ) * 0.05;
 			group.rotation.x += ( targetYRotation - group.rotation.x ) * 0.05;
@@ -169,13 +187,13 @@
 		 * Prompts the user for the output file name, and uses a library
 		 * to generate a downloadable STL
 		 */
+
 		function save() {
-			var geometry = mesh.geometry;
+			var geometry = mesh.geometry,
+				stlString = stlFromGeometry( geometry ),
+				blob = new Blob([stlString], { type: "text/plain" });
 
-			stlString = stlFromGeometry( geometry ),
-			blob = new Blob([stlString], { type: "text/plain" });
-
-			saveAs(blob, prompt("Name the model") + '.stl');			
+			saveAs(blob, prompt("Name the model") + '.stl');
 		}
 
 		init();

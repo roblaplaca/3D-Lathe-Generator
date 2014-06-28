@@ -67,19 +67,9 @@
 			return $module.find("." + className).get(0);
 		}
 
-		/**
-         * @params {int} mode - the index of the current slide
-         * @public
-         */
-
-		function setMode(mode) {
-
-		}
-
 		init();
 
 		return {
-			setMode: setMode,
 			getDrawingCanvas: getDrawingCanvas,
 			getMirrorCanvas: getMirrorCanvas
 		};

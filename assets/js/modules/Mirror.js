@@ -2,6 +2,8 @@
 	/**
      * @class Mirror
      * @typedef  {params}  configuration parameters.
+     * TODO: add class definition
+     * TODO: come up with better name than mirror
      */
 
 	window.Mirror = function(params) {
@@ -58,7 +60,7 @@
 
 					// var from = new mirrorScope.Point(canvasWidth - segments[i].point.x, segments[i].point.y);
 					// var to = new mirrorScope.Point(canvasWidth, segments[i].point.y);
-					
+
 					new mirrorScope.Path.Line(
 						new mirrorScope.Point(canvasWidth - segments[i].point.x, segments[i].point.y),
 						new mirrorScope.Point(canvasWidth, segments[i].point.y)
@@ -66,7 +68,7 @@
 				}
 
 				if( newPath.closed ) {
-					path.add(new mirrorScope.Point(canvasWidth - segments[0].point.x, segments[0].point.y));				
+					path.add(new mirrorScope.Point(canvasWidth - segments[0].point.x, segments[0].point.y));
 				}
 				
 				mirrorScope.view.update();
