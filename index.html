@@ -2,9 +2,11 @@
 <html lang="en">
 	<head>
 		<title>3D Lathe Tool</title>
-		<meta charset="utf-8">
+		<meta charset="utf-8" />
+
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
+		<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 		<style>
 			html {
 				margin: 0;
@@ -16,7 +18,6 @@
 				background: #efefef;
 				font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
 			}
-
 			.module-lathe-tool, .module-lathe-output {
 				margin: auto;
 				border: 1px solid #ccc;
@@ -45,7 +46,6 @@
 			canvas {
 				background: url("/assets/img/grid.png");
 			}
-
 			.main {
 				float: left;
 			}
@@ -58,9 +58,7 @@
 			.wrapper {
 				width: 1220px;
 				margin: auto;
-
 				position: relative;
-				
 			}
 			.sidebar {
 				float: left;
@@ -75,29 +73,30 @@
 			}
 			button {
 				cursor: pointer;
-				padding: 6px 20px;
-				background: #000;
-				border: 4px solid #000;
-				color: #fff;
+				padding: 6px 10px;
+				border: 2px solid #000;
+				color: #000;
 			}
 			button:disabled {
-				background: #ccc;
+				background: none;
 				border-color: #ccc;
-				color: #fff;
+				color: #ccc;
 				cursor: default;
 			}
 			button:disabled:hover {
 				border-color: #ccc;
 			}
 			button:hover, button:focus {
-				border-color: #333;
+				border-color: #666;
+				color: #666;
 			}
 			.reset {
-				border: 4px solid #c00;
-				background: #c00;
+				border: 2px solid #c00;
+				color: #c00;
 			}
 			.reset:hover, .reset:focus {
 				border-color: red;
+				color: red;
 			}
 			.sidebar ul {
 				margin: 10px 0;
@@ -129,13 +128,11 @@
 				width: 100%;
 				margin: 0;
 			}
-
 		</style>
 	</head>
 	<body>
-		
+
 		<div class="wrapper">
-			
 			<header>
 				<h1>3D Lathe Generator</h1>
 				<p>Draw a shape on the graph paper to generate a 3D object</p>
@@ -143,7 +140,7 @@
 
 			<div class="main">
 				<div class="module module-lathe-tool" >
-					<!-- Container for module -->
+					
 				</div>
 			</div>
 
@@ -161,10 +158,16 @@
 
 				<ul>
 					<li>
-						<button class="download" disabled="disabled">Download STL</button>
+						<button class="download" disabled="disabled">
+							<i class="fa fa-lg fa-download fa-fw"></i>
+							Download .STL
+						</button>
 					</li>
 					<li>
-						<button class="reset">Reset</button>
+						<button class="reset">
+							<i class="fa fa-lg fa-undo fa-fw"></i>
+							Reset
+						</button>
 					</li>
 				</ul>
 			</div>
@@ -175,13 +178,10 @@
 		<script src="/assets/js/modules/LatheWorkArea.js"></script>
 		<script src="/assets/js/modules/PenTool.js"></script>
 		<script src="/assets/js/modules/Mirror.js"></script>
-
 		<script src="assets/js/libs/FileSaver.js"></script>
 		<script src="assets/js/libs/THREE2STL.js"></script>
 		<script src="assets/js/libs/Three.js"></script>
-
 		<script src="assets/js/modules/Lathe.js"></script>
-
 		<script>
 			$(function() {
 				var $slider = $(".num-segments");
@@ -211,7 +211,12 @@
 							var shapePoints = convertPathToShape(path);
 							lathe.addShape(shapePoints, $slider.val());	
 							mirror.update(path);
-							$(".download").prop('disabled', false);
+
+							if( path.closed ) {
+								$(".download").prop('disabled', false);	
+							} else {
+								$(".download").prop('disabled', true);
+							}
 						} else {
 							lathe.addShape([], 0);
 							mirror.clear();
