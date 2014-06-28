@@ -8,7 +8,7 @@ body {
 	background: #efefef;
 	font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
 }
-.module-lathe-tool, .module-lathe-output {
+.module-lathe-tool, .module-lathe-preview {
 	margin: auto;
 	border: 1px solid #ccc;
 	background: #fff;
@@ -39,10 +39,10 @@ canvas {
 .main {
 	float: left;
 }
-.module-lathe-output {
+.module-lathe-preview {
 	margin-top: 10px;
 }
-.module-lathe-output canvas {
+.module-lathe-preview canvas {
 	background: none;
 }
 .wrapper {
@@ -56,7 +56,7 @@ canvas {
 	display: inline-block;
 	margin-left: 20px;
 }
-.module-lathe-output {
+.module-lathe-preview {
 	margin-top: 0;
 	height: 300px;
 	width: 300px;

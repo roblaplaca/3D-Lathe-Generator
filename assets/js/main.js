@@ -10,7 +10,7 @@ $(function() {
 	});
 
 	var lathe = new Lathe({
-		instance: $(".module-lathe-output").eq(0),
+		instance: $(".module-lathe-preview").eq(0),
 		height: 300,
 		width: 300
 	});
