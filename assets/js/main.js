@@ -19,19 +19,19 @@ $(function() {
 		instance: workarea.getMirrorCanvas()
 	});
 
-	var penTool = new PenTool({
+	var penTool = new DrawingTool({
 		instance: workarea.getDrawingCanvas(),
 		onPathClosed: function() {
 			var path = penTool.getPath();
 
 			if( path !== null && typeof path !== "undefined") {
 				var shapePoints = convertPathToShape(path);
-				lathe.addShape(shapePoints, $slider.val());	
+				lathe.addShape(shapePoints, $slider.val());
 				mirror.update(path);
 
 				// TODO: make toggle for download button a 
 				if( path.closed ) {
-					$(".download").prop('disabled', false);	
+					$(".download").prop('disabled', false);
 				} else {
 					$(".download").prop('disabled', true);
 				}

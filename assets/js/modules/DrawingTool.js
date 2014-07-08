@@ -1,10 +1,10 @@
 (function() {
 	/**
-     * @class PenTool
+     * @class DrawingTool
      * @typedef  {params}  configuration parameters.
      */
 
-	window.PenTool = function(params) {
+	window.DrawingTool = function(params) {
 		var opts = $.extend({
 			instance: null,
 			onPathClosed: $.noop
